@@ -3,278 +3,264 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algebra Academy | Interactive Learning Path</title>
+    <title>Algebra Master | Adaptive Learning Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
-        .locked { filter: grayscale(1); opacity: 0.6; cursor: not-allowed !important; }
-        .math-font { font-family: 'Courier New', Courier, monospace; }
-        .gradient-header { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); }
-        .progress-bar { transition: width 0.5s ease-in-out; }
-        .option-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .locked { filter: grayscale(1); opacity: 0.5; cursor: not-allowed !important; pointer-events: none; }
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+        .stat-panel { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); transform: translateX(100%); }
+        .stat-panel.open { transform: translateX(0); }
+        .math-display { font-family: 'Courier New', Courier, monospace; text-shadow: 0 0 10px rgba(99, 102, 241, 0.3); }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen pb-20">
+<body class="bg-slate-50 min-h-screen text-slate-800">
 
-    <nav class="gradient-header text-white p-6 shadow-xl mb-8">
-        <div class="max-w-5xl mx-auto flex justify-between items-center">
-            <div>
-                <h1 class="text-3xl font-black tracking-tight">ALGEBRA ACADEMY</h1>
-                <p class="text-indigo-100 text-sm italic">Mastering Class 1 to 5</p>
-            </div>
-            <div class="text-right">
-                <div class="text-xs uppercase tracking-widest opacity-70">Total Progress</div>
-                <div class="w-32 bg-indigo-900/30 h-3 rounded-full mt-1 overflow-hidden">
-                    <div id="top-progress" class="progress-bar bg-yellow-400 h-full" style="width: 0%;"></div>
-                </div>
-            </div>
+    <nav class="gradient-bg text-white p-6 shadow-2xl flex justify-between items-center sticky top-0 z-30">
+        <div>
+            <h1 class="text-2xl font-black tracking-tighter italic text-indigo-400">ALGEBRA.GEN</h1>
+            <p class="text-xs text-slate-400 uppercase tracking-widest">Class 1-5 Mastery</p>
         </div>
+        <button onclick="toggleStats()" class="bg-indigo-600 hover:bg-indigo-500 px-4 py-2 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2">
+            <span>📊 Performance</span>
+        </button>
     </nav>
 
-    <main class="max-w-5xl mx-auto px-4">
-        
-        <div id="dashboard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate__animated animate__fadeIn">
+    <div id="statPanel" class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-50 p-8 stat-panel border-l border-slate-200">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="text-2xl font-bold text-slate-900">Summary</h2>
+            <button onclick="toggleStats()" class="text-slate-400 hover:text-slate-900 text-3xl">&times;</button>
+        </div>
+        <div class="space-y-4">
+            <div class="p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
+                <p class="text-xs font-bold text-indigo-600 uppercase mb-1">Total Attempted</p>
+                <p id="stat-total" class="text-3xl font-black">0</p>
             </div>
+            <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                <p class="text-xs font-bold text-emerald-600 uppercase mb-1">First Attempt Success</p>
+                <p id="stat-first" class="text-3xl font-black">0</p>
+            </div>
+            <div class="p-4 bg-amber-50 rounded-2xl border border-amber-100">
+                <p class="text-xs font-bold text-amber-600 uppercase mb-1">Second Attempt Success</p>
+                <p id="stat-second" class="text-3xl font-black">0</p>
+            </div>
+            <button onclick="resetStats()" class="w-full mt-8 text-xs text-slate-400 underline hover:text-red-500">Reset Local Progress</button>
+        </div>
+    </div>
 
-        <div id="portal" class="hidden max-w-3xl mx-auto animate__animated animate__zoomIn">
-            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
-                <div id="lesson-area" class="p-8 border-b border-slate-100 bg-slate-50">
-                    <button onclick="closePortal()" class="text-indigo-600 font-bold mb-4 hover:underline">← Exit to Map</button>
-                    <h2 id="lesson-title" class="text-2xl font-black text-slate-800 mb-2"></h2>
-                    <div id="lesson-text" class="text-slate-600 leading-relaxed italic"></div>
+    <main class="max-w-5xl mx-auto p-6">
+        
+        <div id="dashboard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate__animated animate__fadeIn"></div>
+
+        <div id="modeModal" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 z-40">
+            <div class="bg-white rounded-[2rem] p-10 max-w-md w-full shadow-2xl text-center animate__animated animate__zoomIn">
+                <h2 id="modalTitle" class="text-3xl font-black text-slate-900 mb-2"></h2>
+                <p class="text-slate-500 mb-8 italic">Choose your challenge level</p>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="initSession(10)" class="p-6 border-2 border-slate-100 rounded-2xl hover:border-indigo-500 hover:bg-indigo-50 transition-all font-bold">10 Qs</button>
+                    <button onclick="initSession(25)" class="p-6 border-2 border-slate-100 rounded-2xl hover:border-indigo-500 hover:bg-indigo-50 transition-all font-bold">25 Qs</button>
+                    <button onclick="initSession(50)" class="p-6 border-2 border-slate-100 rounded-2xl hover:border-indigo-500 hover:bg-indigo-50 transition-all font-bold">50 Qs</button>
+                    <button onclick="initSession(100)" class="p-6 bg-indigo-600 text-white rounded-2xl shadow-xl shadow-indigo-200 hover:bg-indigo-700 transition-all font-bold">100 Qs</button>
                 </div>
-                
-                <div class="p-8">
-                    <div id="question-text" class="math-font text-3xl font-bold text-center py-10 bg-slate-900 text-indigo-300 rounded-2xl mb-8 shadow-inner"></div>
+                <button onclick="closeModal()" class="mt-8 text-slate-400 font-bold hover:text-slate-900">Cancel</button>
+            </div>
+        </div>
+
+        <div id="portal" class="hidden animate__animated animate__fadeIn">
+            <div class="max-w-2xl mx-auto bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-200">
+                <div class="p-6 bg-slate-50 border-b flex justify-between items-center font-bold text-slate-500 text-sm px-10">
+                    <span id="display-class"></span>
+                    <span id="display-progress"></span>
+                </div>
+                <div class="p-10">
+                    <div id="question-box" class="math-display text-4xl font-bold text-center py-16 bg-slate-900 text-indigo-300 rounded-[2rem] mb-10 shadow-2xl border-b-4 border-indigo-700"></div>
                     <div id="options-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
-                    <div id="feedback-msg" class="mt-8 p-4 rounded-xl hidden text-center font-bold animate__animated"></div>
-                    <div id="next-action" class="hidden mt-6">
-                        <button onclick="moveToNext()" class="w-full p-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg hover:bg-indigo-700 transition">Next Question →</button>
+                    <div id="feedback" class="mt-8 p-6 rounded-2xl hidden text-center font-bold animate__animated"></div>
+                    <div id="next-container" class="hidden mt-8">
+                        <button onclick="handleNext()" class="w-full p-6 bg-indigo-600 text-white rounded-[1.5rem] font-black text-lg shadow-xl hover:bg-indigo-700 transform active:scale-95 transition">Next Question &rarr;</button>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div id="success-screen" class="hidden text-center p-12 bg-white rounded-3xl shadow-2xl border-4 border-yellow-400 animate__animated animate__tada">
-            <div class="text-6xl mb-4">🏆</div>
-            <h1 class="text-4xl font-black text-slate-800 mb-2">Grandmaster!</h1>
-            <p class="text-slate-600 mb-8">You have successfully navigated the Algebra Map from Class 1 to 5.</p>
-            <button onclick="restart()" class="bg-indigo-600 text-white px-8 py-3 rounded-full font-bold shadow-lg">Reset & Replay</button>
         </div>
     </main>
 
     <script>
-        const curriculum = [
-            { 
-                id: 1, class: "Class 1", title: "Balance Scales", 
-                lesson: "Think of '=' as a pivot on a scale. Both sides must have the same total!",
-                questions: [
-                    { q: "1 + 1 = 1 + ?", a: "1", opts: ["1","2","0","3"] },
-                    { q: "2 + 3 = 4 + ?", a: "1", opts: ["1","5","2","4"] },
-                    { q: "5 + 0 = 2 + ?", a: "3", opts: ["3","5","0","2"] },
-                    { q: "10 = 5 + ?", a: "5", opts: ["2","5","10","15"] },
-                    { q: "4 + 2 = ? + 3", a: "3", opts: ["6","3","4","1"] },
-                    { q: "1 + 9 = 5 + ?", a: "5", opts: ["10","4","5","6"] },
-                    { q: "7 + 1 = 4 + ?", a: "4", opts: ["8","4","2","5"] },
-                    { q: "3 + 3 = 2 + ?", a: "4", opts: ["4","6","3","2"] },
-                    { q: "0 + 8 = 4 + ?", a: "4", opts: ["8","0","4","2"] },
-                    { q: "9 + 1 = ? + 2", a: "8", opts: ["10","8","7","9"] }
-                ]
-            },
-            { 
-                id: 2, class: "Class 2", title: "Number Patterns", 
-                lesson: "Algebra is the study of patterns. Find the jump between numbers!",
-                questions: [
-                    { q: "2, 4, 6, ?", a: "8", opts: ["7","8","9","10"] },
-                    { q: "5, 10, 15, ?", a: "20", opts: ["16","20","25","30"] },
-                    { q: "10, 20, 30, ?", a: "40", opts: ["31","50","40","35"] },
-                    { q: "1, 3, 5, ?", a: "7", opts: ["6","7","8","9"] },
-                    { q: "20, 18, 16, ?", a: "14", opts: ["14","15","12","17"] },
-                    { q: "3, 6, 9, ?", a: "12", opts: ["10","11","12","15"] },
-                    { q: "11, 22, 33, ?", a: "44", opts: ["40","44","55","34"] },
-                    { q: "100, 90, 80, ?", a: "70", opts: ["70","75","60","85"] },
-                    { q: "4, 8, 12, ?", a: "16", opts: ["14","16","18","20"] },
-                    { q: "1, 2, 1, 2, ?", a: "1", opts: ["1","2","3","0"] }
-                ]
-            },
-            { 
-                id: 3, class: "Class 3", title: "Commutative Law", 
-                lesson: "Rule: a + b = b + a. The order doesn't change the answer!",
-                questions: [
-                    { q: "5 + 2 = 2 + ?", a: "5", opts: ["2","5","7","0"] },
-                    { q: "10 + 15 = ? + 10", a: "15", opts: ["10","15","25","5"] },
-                    { q: "100 + 1 = 1 + ?", a: "100", opts: ["1","100","101","0"] },
-                    { q: "12 + 3 = ? + 12", a: "3", opts: ["3","12","15","6"] },
-                    { q: "40 + ? = 5 + 40", a: "5", opts: ["5","40","45","10"] },
-                    { q: "6 + 7 = 7 + ?", a: "6", opts: ["6","7","13","0"] },
-                    { q: "99 + 1 = 1 + ?", a: "99", opts: ["1","100","99","2"] },
-                    { q: "10 + ? = 20 + 10", a: "20", opts: ["10","20","30","0"] },
-                    { q: "x + y = y + ?", a: "x", opts: ["x","y","z","xy"] },
-                    { q: "12 + 13 = 13 + ?", a: "12", opts: ["12","13","25","0"] }
-                ]
-            },
-            { 
-                id: 4, class: "Class 4", title: "Intro to Variables", 
-                lesson: "We use letters as placeholders for numbers we want to find.",
-                questions: [
-                    { q: "n + 2 = 5. n?", a: "3", opts: ["2","3","5","7"] },
-                    { q: "x - 4 = 10. x?", a: "14", opts: ["6","14","10","4"] },
-                    { q: "2n = 10. n?", a: "5", opts: ["2","5","20","8"] },
-                    { q: "x + 10 = 25. x?", a: "15", opts: ["10","15","25","5"] },
-                    { q: "y / 2 = 5. y?", a: "10", opts: ["2.5","7","10","5"] },
-                    { q: "3 + n = 30. n?", a: "27", opts: ["33","27","3","30"] },
-                    { q: "x - 20 = 20. x?", a: "40", opts: ["0","40","20","10"] },
-                    { q: "5 + n = 5. n?", a: "0", opts: ["0","5","1","10"] },
-                    { q: "2x + 1 = 11. x?", a: "5", opts: ["5","10","6","4"] },
-                    { q: "10 - n = 5. n?", a: "5", opts: ["2","3","5","10"] }
-                ]
-            },
-            { 
-                id: 5, class: "Class 5", title: "BODMAS Order", 
-                lesson: "Math has a strict order! Multiply before you add.",
-                questions: [
-                    { q: "2 + 2 x 2 = ?", a: "6", opts: ["8","6","4","10"] },
-                    { q: "(5 + 5) x 2 = ?", a: "20", opts: ["15","20","25","30"] },
-                    { q: "10 - 2 x 3 = ?", a: "4", opts: ["24","4","6","8"] },
-                    { q: "20 / 4 + 1 = ?", a: "6", opts: ["4","5","6","2"] },
-                    { q: "3 x (4 + 1) = ?", a: "15", opts: ["13","15","12","7"] },
-                    { q: "2 + 10 / 2 = ?", a: "7", opts: ["6","7","8","5"] },
-                    { q: "5 x 2 + 3 x 2 = ?", a: "16", opts: ["16","20","26","10"] },
-                    { q: "12 / (2 + 1) = ?", a: "4", opts: ["6","4","2","12"] },
-                    { q: "(10 - 5) + 5 = ?", a: "10", opts: ["0","10","5","15"] },
-                    { q: "x = 2. Find 3x + 4.", a: "10", opts: ["10","9","12","7"] }
-                ]
-            }
-        ];
-
-        const remedialData = {
-            1: [{q: "1 + 1 = ?", a: "2", opts: ["1","2","3","4"]}, {q: "0 + 2 = ?", a: "2", opts: ["0","2","1","4"]}, {q: "3 = 2 + ?", a: "1", opts: ["1","0","3","2"]}],
-            2: [{q: "1, 1, 1, ?", a: "1", opts: ["1","0","2","3"]}, {q: "A, B, A, ?", a: "B", opts: ["A","B","C","D"]}, {q: "2, 4, ?", a: "6", opts: ["5","6","7","8"]}]
-            // Add more as needed
+        // -- CORE ENGINE --
+        let state = JSON.parse(localStorage.getItem('alg_engine_state')) || {
+            unlockedClass: 1,
+            stats: { total: 0, first: 0, second: 0 }
         };
 
-        let unlockedLevel = parseInt(localStorage.getItem('algebraLevel')) || 1;
-        let questionIndex = 0;
-        let currentLevel = null;
-        let strikes = 0;
-        let isRemedial = false;
-        let remIndex = 0;
+        let session = { active: false, classId: 0, target: 0, current: 0, strikes: 0, currentQ: null };
 
+        const classData = [
+            { id: 1, name: "Class 1", title: "The Equalizer", lesson: "Find the missing number to balance the equation." },
+            { id: 2, name: "Class 2", title: "Pattern Finder", lesson: "Identify the constant change in the sequence." },
+            { id: 3, name: "Class 3", title: "Swap Logic", lesson: "Understanding a + b = b + a." },
+            { id: 4, name: "Class 4", title: "Variable Intro", lesson: "Find the hidden number represented by 'n'." },
+            { id: 5, name: "Class 5", title: "The Order Law", lesson: "Solve using Brackets and Multiplication first." }
+        ];
+
+        // -- GENERATOR --
+        function generateAlgebra(classId) {
+            let q, a, opts = [];
+            const r1 = Math.floor(Math.random() * 20) + 1;
+            const r2 = Math.floor(Math.random() * 20) + 1;
+
+            switch(classId) {
+                case 1: 
+                    const sum = r1 + r2;
+                    const split = Math.floor(Math.random() * sum);
+                    q = `${r1} + ${r2} = ${split} + ?`;
+                    a = sum - split;
+                    break;
+                case 2:
+                    const step = Math.floor(Math.random() * 5) + 2;
+                    q = `${r1}, ${r1+step}, ${r1+step*2}, ?`;
+                    a = r1 + step*3;
+                    break;
+                case 3:
+                    q = `${r1} + ${r2} = ${r2} + ?`;
+                    a = r1;
+                    break;
+                case 4:
+                    const n = Math.floor(Math.random() * 12);
+                    q = `n + ${r1} = ${n + r1}. Find n.`;
+                    a = n;
+                    break;
+                case 5:
+                    const mult = Math.floor(Math.random() * 5) + 2;
+                    q = `(${r1} + 1) × ${mult} = ?`;
+                    a = (r1 + 1) * mult;
+                    break;
+            }
+
+            opts = [a, a + (Math.random() > 0.5 ? 2 : -1), a + 5, a - 2];
+            return { q, a: a.toString(), opts: opts.sort(() => Math.random() - 0.5).map(String) };
+        }
+
+        // -- UI HANDLERS --
         function initDashboard() {
             const dash = document.getElementById('dashboard');
             dash.innerHTML = '';
-            document.getElementById('top-progress').style.width = ((unlockedLevel - 1) / curriculum.length * 100) + '%';
-
-            curriculum.forEach(topic => {
-                const isLocked = topic.id > unlockedLevel;
-                const isCompleted = topic.id < unlockedLevel;
+            classData.forEach(c => {
+                const locked = c.id > state.unlockedClass;
                 const card = document.createElement('div');
-                card.className = `p-6 rounded-3xl shadow-sm border-2 transition-all ${isLocked ? 'locked bg-slate-200' : isCompleted ? 'bg-green-50 border-green-200' : 'bg-white border-indigo-500 shadow-md'}`;
+                card.className = `p-8 rounded-[2.5rem] border-2 transition-all ${locked ? 'locked bg-slate-100 border-slate-200' : 'bg-white border-slate-100 hover:border-indigo-500 shadow-xl cursor-pointer hover:-translate-y-2'}`;
                 card.innerHTML = `
-                    <div class="flex justify-between font-bold text-xs mb-2">
-                        <span class="${isCompleted ? 'text-green-600' : 'text-indigo-500'}">${topic.class}</span>
-                        <span>${isLocked ? '🔒' : isCompleted ? '✅' : '🚀'}</span>
-                    </div>
-                    <h3 class="text-xl font-black text-slate-800">${topic.title}</h3>
-                    <p class="text-sm mt-2 text-slate-500">${isLocked ? 'Complete previous classes' : isCompleted ? 'Topic Mastered!' : '10 Questions Start'}</p>
+                    <p class="text-xs font-black text-indigo-500 uppercase tracking-tighter mb-2">${c.name}</p>
+                    <h2 class="text-2xl font-black text-slate-800 mb-2">${c.title}</h2>
+                    <p class="text-sm text-slate-400 font-medium">${locked ? 'Locked: Finish previous' : 'Practice up to 100 Qs'}</p>
                 `;
-                if (!isLocked) card.onclick = () => startLevel(topic.id);
+                if(!locked) card.onclick = () => openModal(c.id);
                 dash.appendChild(card);
             });
+            updateStatsUI();
         }
 
-        function startLevel(id) {
-            currentLevel = curriculum.find(l => l.id === id);
-            questionIndex = 0;
-            isRemedial = false;
+        function openModal(id) {
+            session.classId = id;
+            document.getElementById('modalTitle').innerText = classData[id-1].title;
+            document.getElementById('modeModal').classList.remove('hidden');
+        }
+
+        function initSession(count) {
+            session.target = count;
+            session.current = 0;
+            session.active = true;
+            closeModal();
             document.getElementById('dashboard').classList.add('hidden');
             document.getElementById('portal').classList.remove('hidden');
-            showQuestion();
+            loadNewQuestion();
         }
 
-        function showQuestion() {
-            const qSet = isRemedial ? remedialData[currentLevel.id] || currentLevel.questions : currentLevel.questions;
-            const idx = isRemedial ? remIndex : questionIndex;
-            const qData = qSet[idx];
+        function loadNewQuestion() {
+            session.strikes = 0;
+            session.currentQ = generateAlgebra(session.classId);
+            renderQuestion();
+        }
 
-            document.getElementById('lesson-title').innerText = isRemedial ? "Practice Loop" : `${currentLevel.title} (${idx + 1}/10)`;
-            document.getElementById('lesson-text').innerText = currentLevel.lesson;
-            document.getElementById('question-text').innerText = qData.q;
-            document.getElementById('next-action').classList.add('hidden');
-            document.getElementById('feedback-msg').classList.add('hidden');
-
+        function renderQuestion() {
+            document.getElementById('display-class').innerText = classData[session.classId-1].title;
+            document.getElementById('display-progress').innerText = `Progress: ${session.current + 1}/${session.target}`;
+            document.getElementById('question-box').innerText = session.currentQ.q;
+            document.getElementById('feedback').classList.add('hidden');
+            document.getElementById('next-container').classList.add('hidden');
+            
             const grid = document.getElementById('options-grid');
             grid.innerHTML = '';
-            qData.opts.forEach(opt => {
+            session.currentQ.opts.forEach(o => {
                 const b = document.createElement('button');
-                b.className = "option-btn p-5 bg-white border-2 border-slate-100 rounded-2xl hover:border-indigo-600 font-bold text-slate-700 transition-all";
-                b.innerText = opt;
-                b.onclick = () => checkAnswer(opt);
+                b.className = "p-5 bg-white border-2 border-slate-100 rounded-2xl font-bold text-slate-700 hover:border-indigo-500 hover:bg-indigo-50 transition active:scale-95";
+                b.innerText = o;
+                b.onclick = () => checkAnswer(o);
                 grid.appendChild(b);
             });
         }
 
         function checkAnswer(val) {
-            const qSet = isRemedial ? remedialData[currentLevel.id] || currentLevel.questions : currentLevel.questions;
-            const idx = isRemedial ? remIndex : questionIndex;
-            const correct = qSet[idx].a;
-            const fb = document.getElementById('feedback-msg');
-            
-            fb.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700', 'animate__shakeX', 'animate__bounceIn');
+            const fb = document.getElementById('feedback');
+            fb.classList.remove('hidden', 'bg-emerald-100', 'text-emerald-700', 'bg-rose-100', 'text-rose-700', 'animate__bounceIn', 'animate__shakeX');
 
-            if(val === correct) {
-                fb.innerText = "🌟 Correct!";
-                fb.classList.add('bg-green-100', 'text-green-700', 'animate__bounceIn');
-                strikes = 0;
-                document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
-                document.getElementById('next-action').classList.remove('hidden');
+            if (val === session.currentQ.a) {
+                fb.innerText = "⭐ Correct Mastery!";
+                fb.classList.add('bg-emerald-100', 'text-emerald-700', 'animate__bounceIn');
+                
+                if(session.strikes === 0) state.stats.first++;
+                else if(session.strikes === 1) state.stats.second++;
+                
+                state.stats.total++;
+                document.getElementById('next-container').classList.remove('hidden');
+                document.querySelectorAll('#options-grid button').forEach(b => b.disabled = true);
             } else {
-                strikes++;
-                fb.innerText = "Try again!";
-                fb.classList.add('bg-red-100', 'text-red-700', 'animate__shakeX');
-                if(!isRemedial && strikes >= 2 && remedialData[currentLevel.id]) {
-                    fb.innerText = "Let's try some easier practice first!";
-                    setTimeout(() => { isRemedial = true; remIndex = 0; showQuestion(); }, 1500);
+                session.strikes++;
+                fb.innerText = "Not quite! Attempt again.";
+                fb.classList.add('bg-rose-100', 'text-rose-700', 'animate__shakeX');
+                // The student is "locked" - we just wait for them to click the right answer on the same data
+                if(session.strikes >= 2) {
+                    fb.innerText = "Keep trying! Think about the balance.";
                 }
             }
+            saveState();
         }
 
-        function moveToNext() {
-            if(isRemedial) {
-                remIndex++;
-                if(remIndex >= remedialData[currentLevel.id].length) {
-                    isRemedial = false;
-                    showQuestion();
-                } else { showQuestion(); }
+        function handleNext() {
+            session.current++;
+            if (session.current < session.target) {
+                loadNewQuestion();
             } else {
-                questionIndex++;
-                if(questionIndex < 10) { showQuestion(); }
-                else { completeLevel(); }
+                finishSession();
             }
         }
 
-        function completeLevel() {
-            if(currentLevel.id === unlockedLevel) {
-                unlockedLevel++;
-                localStorage.setItem('algebraLevel', unlockedLevel);
+        function finishSession() {
+            alert(`Incredible! You completed ${session.target} questions.`);
+            if (session.classId === state.unlockedClass && state.unlockedClass < 5) {
+                state.unlockedClass++;
             }
-            if(unlockedLevel > curriculum.length) {
-                document.getElementById('portal').classList.add('hidden');
-                document.getElementById('success-screen').classList.remove('hidden');
-            } else {
-                closePortal();
-            }
-        }
-
-        function closePortal() {
-            document.getElementById('dashboard').classList.remove('hidden');
-            document.getElementById('portal').classList.add('hidden');
-            initDashboard();
-        }
-
-        function restart() {
-            localStorage.clear();
+            saveState();
             location.reload();
+        }
+
+        // -- SYSTEM --
+        function saveState() {
+            localStorage.setItem('alg_engine_state', JSON.stringify(state));
+            updateStatsUI();
+        }
+
+        function updateStatsUI() {
+            document.getElementById('stat-total').innerText = state.stats.total;
+            document.getElementById('stat-first').innerText = state.stats.first;
+            document.getElementById('stat-second').innerText = state.stats.second;
+        }
+
+        function toggleStats() { document.getElementById('statPanel').classList.toggle('open'); }
+        function closeModal() { document.getElementById('modeModal').classList.add('hidden'); }
+        function resetStats() { 
+            if(confirm("Erase all progress?")) { 
+                localStorage.clear(); 
+                location.reload(); 
+            } 
         }
 
         initDashboard();
