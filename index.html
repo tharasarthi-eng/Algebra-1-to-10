@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algebra Academy | Class 1-5 Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        .locked { filter: grayscale(1); opacity: 0.6; cursor: not-allowed; pointer-events: none; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <div id="app" class="max-w-4xl mx-auto py-10 px-4">
+        <div class="text-center mb-10">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-2">Algebra Academy</h1>
+            <p class="text-gray-600">Master the language of numbers from Class 1 to 5</p>
+            <div class="mt-4 inline-block bg-white px-6 py-2 rounded-full shadow-sm border font-bold text-indigo-600">
+                Progress: Level <span id="progress-val">1</span> / 10
+            </div>
+        </div>
+
+        <div id="dashboard" class="grid grid-cols-2 sm:grid-cols-5 gap-6"></div>
+
+        <div id="quiz-portal" class="hidden animate__animated animate__fadeIn">
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-200">
+                <div class="gradient-bg p-8 text-white">
+                    <button onclick="goHome()" class="text-sm bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg mb-4 transition">← Dashboard</button>
+                    <h2 id="q-title" class="text-3xl font-bold"></h2>
+                    <p id="q-desc" class="opacity-90"></p>
+                </div>
+                <div class="p-8">
+                    <div id="q-text" class="text-2xl font-mono bg-gray-50 p-6 rounded-2xl mb-8 border-l-8 border-indigo-500 text-center"></div>
+                    <div id="options" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                    <div id="feedback" class="mt-8 p-4 rounded-xl hidden text-center font-bold"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const levels = [
+            { id: 1, title: "Level 1: Balance", desc: "Keep the scale even.", q: "5 + 3 = 6 + ?", ans: "2", options: ["1", "2", "3", "8"], rationale: "Both sides must sum to 8." },
+            { id: 2, title: "Level 2: Patterns", desc: "Find the missing sequence.", q: "2, 4, 2, 4, 2, ?", ans: "4", options: ["2", "4", "6", "0"], rationale: "This is a repeating pattern." },
+            { id: 3, title: "Level 3: Growth", desc: "What's the next jump?", q: "5, 10, 15, 20, ?", ans: "25", options: ["21", "30", "25", "22"], rationale: "The rule is adding 5 each time." },
+            { id: 4, title: "Level 4: Swapping", desc: "Commutative Property", q: "12 + 45 = 45 + ?", ans: "12", options: ["12", "45", "57", "0"], rationale: "Order doesn't change the sum!" },
+            { id: 5, title: "Level 5: Inverse", desc: "Undo the math.", q: "If □ + 10 = 30, then □ = ?", ans: "20", options: ["40", "10", "20", "30"], rationale: "30 - 10 = 20." },
+            { id: 6, title: "Level 6: Machine", desc: "Input/Output logic.", q: "In: 3, Out: 9 | In: 5, Out: 15. Rule?", ans: "x 3", options: ["+ 6", "x 3", "x 2", "+ 10"], rationale: "Every input is multiplied by 3." },
+            { id: 7, title: "Level 7: Symbols", desc: "Story to Algebra.", q: "'Double a number n is 20'", ans: "2n = 20", options: ["n + 2 = 20", "n/2 = 20", "2n = 20", "n - 2 = 20"], rationale: "Double means multiply by 2." },
+            { id: 8, title: "Level 8: BODMAS", desc: "Order of Operations.", q: "4 + 2 x 5 = ?", ans: "14", options: ["30", "14", "20", "11"], rationale: "Multiply 2x5 first, then add 4." },
+            { id: 9, title: "Level 9: Evaluating", desc: "Find the value.", q: "If x = 10, what is x / 2 + 5?", ans: "10", options: ["10", "15", "7", "20"], rationale: "(10 / 2) + 5 = 5 + 5 = 10." },
+            { id: 10, title: "Level 10: Master", desc: "Solve for y.", q: "3y = 15. What is y?", ans: "5", options: ["3", "12", "5", "18"], rationale: "15 divided by 3 is 5." }
+        ];
+
+        let unlocked = localStorage.getItem('algebraUnlocked') || 1;
+
+        function init() {
+            const dash = document.getElementById('dashboard');
+            dash.innerHTML = '';
+            document.getElementById('progress-val').innerText = unlocked;
+
+            for (let i = 1; i <= 10; i++) {
+                const isLocked = i > unlocked;
+                const card = document.createElement('div');
+                card.className = `p-6 rounded-2xl text-center shadow-md transition-all cursor-pointer ${isLocked ? 'locked bg-gray-200' : 'bg-white hover:scale-105 border-b-4 border-indigo-500'}`;
+                card.innerHTML = `<div class="text-2xl">${isLocked ? '🔒' : '🎯'}</div><div class="font-bold text-gray-700">Level ${i}</div>`;
+                if (!isLocked) card.onclick = () => loadLevel(i);
+                dash.appendChild(card);
+            }
+        }
+
+        function loadLevel(id) {
+            const lvl = levels.find(l => l.id === id);
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('quiz-portal').classList.remove('hidden');
+            document.getElementById('q-title').innerText = lvl.title;
+            document.getElementById('q-desc').innerText = lvl.desc;
+            document.getElementById('q-text').innerText = lvl.q;
+            
+            const optCont = document.getElementById('options');
+            optCont.innerHTML = '';
+            lvl.options.forEach(o => {
+                const b = document.createElement('button');
+                b.className = "p-5 bg-gray-50 border-2 border-gray-100 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 transition text-lg font-bold";
+                b.innerText = o;
+                b.onclick = () => check(o, lvl.ans, lvl.rationale, id);
+                optCont.appendChild(b);
+            });
+            document.getElementById('feedback').classList.add('hidden');
+        }
+
+        function check(selected, correct, rationale, id) {
+            const fb = document.getElementById('feedback');
+            fb.classList.remove('hidden');
+            if(selected == correct) {
+                fb.className = "mt-8 p-4 rounded-xl bg-green-100 text-green-700 block animate__animated animate__bounceIn";
+                fb.innerHTML = `Correct! ${rationale}`;
+                if(id == unlocked && unlocked < 10) {
+                    unlocked++;
+                    localStorage.setItem('algebraUnlocked', unlocked);
+                }
+                setTimeout(goHome, 2500);
+            } else {
+                fb.className = "mt-8 p-4 rounded-xl bg-red-100 text-red-700 block animate__animated animate__shakeX";
+                fb.innerHTML = `Try again! Hint: ${rationale}`;
+            }
+        }
+
+        function goHome() {
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('quiz-portal').classList.add('hidden');
+            init();
+        }
+
+        init();
+    </script>
+</body>
+</html>
