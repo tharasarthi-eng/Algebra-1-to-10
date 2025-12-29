@@ -3,118 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Algebra Academy | Class 1-5 Portal</title>
+    <title>Algebra Academy | Master Class 1-5</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
-        .locked { filter: grayscale(1); opacity: 0.6; cursor: not-allowed; pointer-events: none; }
-        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .locked { filter: grayscale(1); opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+        .math-font { font-family: 'Courier New', Courier, monospace; }
+        .gradient-header { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); }
+        .progress-bar { transition: width 0.5s ease-in-out; }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-slate-50 min-h-screen pb-20">
 
-    <div id="app" class="max-w-4xl mx-auto py-10 px-4">
-        <div class="text-center mb-10">
-            <h1 class="text-4xl font-extrabold text-gray-800 mb-2">Algebra Academy</h1>
-            <p class="text-gray-600">Master the language of numbers from Class 1 to 5</p>
-            <div class="mt-4 inline-block bg-white px-6 py-2 rounded-full shadow-sm border font-bold text-indigo-600">
-                Progress: Level <span id="progress-val">1</span> / 10
+    <nav class="gradient-header text-white p-6 shadow-xl mb-8">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-black tracking-tight">ALGEBRA EXPLORER</h1>
+                <p class="text-indigo-100 text-sm italic">The Journey from Class 1 to 5</p>
+            </div>
+            <div class="text-right">
+                <div class="text-xs uppercase tracking-widest opacity-70">Your Mastery</div>
+                <div class="w-32 bg-indigo-900/30 h-3 rounded-full mt-1 overflow-hidden">
+                    <div id="top-progress" class="progress-bar bg-yellow-400 h-full" style="width: 10%;"></div>
+                </div>
             </div>
         </div>
+    </nav>
 
-        <div id="dashboard" class="grid grid-cols-2 sm:grid-cols-5 gap-6"></div>
+    <main class="max-w-5xl mx-auto px-4">
+        
+        <div id="dashboard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate__animated animate__fadeIn">
+            </div>
 
-        <div id="quiz-portal" class="hidden animate__animated animate__fadeIn">
-            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-200">
-                <div class="gradient-bg p-8 text-white">
-                    <button onclick="goHome()" class="text-sm bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg mb-4 transition">← Dashboard</button>
-                    <h2 id="q-title" class="text-3xl font-bold"></h2>
-                    <p id="q-desc" class="opacity-90"></p>
+        <div id="portal" class="hidden max-w-3xl mx-auto animate__animated animate__zoomIn">
+            <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-200">
+                <div id="lesson-area" class="p-8 border-b border-slate-100 bg-slate-50">
+                    <button onclick="closePortal()" class="text-indigo-600 font-bold mb-4 hover:underline">← Back to Map</button>
+                    <h2 id="lesson-title" class="text-2xl font-black text-slate-800 mb-2"></h2>
+                    <div id="lesson-text" class="text-slate-600 leading-relaxed italic"></div>
                 </div>
+                
                 <div class="p-8">
-                    <div id="q-text" class="text-2xl font-mono bg-gray-50 p-6 rounded-2xl mb-8 border-l-8 border-indigo-500 text-center"></div>
-                    <div id="options" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
-                    <div id="feedback" class="mt-8 p-4 rounded-xl hidden text-center font-bold"></div>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-bold uppercase">The Challenge</span>
+                    </div>
+                    <div id="question-text" class="math-font text-3xl font-bold text-center py-10 bg-slate-900 text-indigo-300 rounded-2xl mb-8 shadow-inner"></div>
+                    <div id="options-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                    <div id="feedback-msg" class="mt-8 p-4 rounded-xl hidden text-center font-bold animate__animated"></div>
                 </div>
             </div>
         </div>
-    </div>
+
+        <div id="success-screen" class="hidden text-center p-12 bg-white rounded-3xl shadow-2xl border-4 border-yellow-400 animate__animated animate__tada">
+            <div class="text-6xl mb-4">🏆</div>
+            <h1 class="text-4xl font-black text-slate-800 mb-2">Algebra Master!</h1>
+            <p class="text-slate-600 mb-8">You have completed the entire Class 1-5 foundation curriculum.</p>
+            <button onclick="restart()" class="bg-indigo-600 text-white px-8 py-3 rounded-full font-bold shadow-lg">Start New Journey</button>
+        </div>
+
+    </main>
 
     <script>
-        const levels = [
-            { id: 1, title: "Level 1: Balance", desc: "Keep the scale even.", q: "5 + 3 = 6 + ?", ans: "2", options: ["1", "2", "3", "8"], rationale: "Both sides must sum to 8." },
-            { id: 2, title: "Level 2: Patterns", desc: "Find the missing sequence.", q: "2, 4, 2, 4, 2, ?", ans: "4", options: ["2", "4", "6", "0"], rationale: "This is a repeating pattern." },
-            { id: 3, title: "Level 3: Growth", desc: "What's the next jump?", q: "5, 10, 15, 20, ?", ans: "25", options: ["21", "30", "25", "22"], rationale: "The rule is adding 5 each time." },
-            { id: 4, title: "Level 4: Swapping", desc: "Commutative Property", q: "12 + 45 = 45 + ?", ans: "12", options: ["12", "45", "57", "0"], rationale: "Order doesn't change the sum!" },
-            { id: 5, title: "Level 5: Inverse", desc: "Undo the math.", q: "If □ + 10 = 30, then □ = ?", ans: "20", options: ["40", "10", "20", "30"], rationale: "30 - 10 = 20." },
-            { id: 6, title: "Level 6: Machine", desc: "Input/Output logic.", q: "In: 3, Out: 9 | In: 5, Out: 15. Rule?", ans: "x 3", options: ["+ 6", "x 3", "x 2", "+ 10"], rationale: "Every input is multiplied by 3." },
-            { id: 7, title: "Level 7: Symbols", desc: "Story to Algebra.", q: "'Double a number n is 20'", ans: "2n = 20", options: ["n + 2 = 20", "n/2 = 20", "2n = 20", "n - 2 = 20"], rationale: "Double means multiply by 2." },
-            { id: 8, title: "Level 8: BODMAS", desc: "Order of Operations.", q: "4 + 2 x 5 = ?", ans: "14", options: ["30", "14", "20", "11"], rationale: "Multiply 2x5 first, then add 4." },
-            { id: 9, title: "Level 9: Evaluating", desc: "Find the value.", q: "If x = 10, what is x / 2 + 5?", ans: "10", options: ["10", "15", "7", "20"], rationale: "(10 / 2) + 5 = 5 + 5 = 10." },
-            { id: 10, title: "Level 10: Master", desc: "Solve for y.", q: "3y = 15. What is y?", ans: "5", options: ["3", "12", "5", "18"], rationale: "15 divided by 3 is 5." }
+        const curriculum = [
+            { 
+                id: 1, class: "Class 1", title: "Balance Scales", 
+                lesson: "Algebra is like a balance scale. The '=' sign means both sides must weigh exactly the same!",
+                q: "4 + 4 = 6 + ?", ans: "2", options: ["2", "4", "8", "0"]
+            },
+            { 
+                id: 2, class: "Class 2", title: "Number Patterns", 
+                lesson: "Algebra helps us predict the future! By looking at numbers, we find the 'rule' of the sequence.",
+                q: "10, 20, 30, 40, ?", ans: "50", options: ["41", "50", "60", "45"]
+            },
+            { 
+                id: 3, class: "Class 3", title: "The Commutative Law", 
+                lesson: "In addition, the order doesn't matter. 5 + 2 is the same as 2 + 5. This is the first law of Algebra!",
+                q: "14 + 88 = 88 + ?", ans: "14", options: ["14", "88", "102", "1"]
+            },
+            { 
+                id: 4, class: "Class 4", title: "Introduction to 'n'", 
+                lesson: "Instead of a empty box, we use letters like 'n' or 'x'. These are called variables.",
+                q: "If n + 5 = 12, what is n?", ans: "7", options: ["5", "17", "7", "12"]
+            },
+            { 
+                id: 5, class: "Class 5", title: "Order of Operations", 
+                lesson: "Rules matter! Always multiply before you add. Remember: Multi-Add!",
+                q: "2 + 3 × 4 = ?", ans: "14", options: ["20", "14", "9", "24"]
+            }
         ];
 
-        let unlocked = localStorage.getItem('algebraUnlocked') || 1;
+        let unlockedLevel = parseInt(localStorage.getItem('algebraLevel')) || 1;
 
-        function init() {
+        function initDashboard() {
             const dash = document.getElementById('dashboard');
             dash.innerHTML = '';
-            document.getElementById('progress-val').innerText = unlocked;
+            document.getElementById('top-progress').style.width = (unlockedLevel / curriculum.length * 100) + '%';
 
-            for (let i = 1; i <= 10; i++) {
-                const isLocked = i > unlocked;
+            curriculum.forEach(lvl => {
+                const isLocked = lvl.id > unlockedLevel;
                 const card = document.createElement('div');
-                card.className = `p-6 rounded-2xl text-center shadow-md transition-all cursor-pointer ${isLocked ? 'locked bg-gray-200' : 'bg-white hover:scale-105 border-b-4 border-indigo-500'}`;
-                card.innerHTML = `<div class="text-2xl">${isLocked ? '🔒' : '🎯'}</div><div class="font-bold text-gray-700">Level ${i}</div>`;
-                if (!isLocked) card.onclick = () => loadLevel(i);
+                card.className = `p-6 rounded-3xl shadow-sm border-2 transition-all ${isLocked ? 'locked bg-slate-200 border-slate-300' : 'bg-white border-indigo-100 hover:border-indigo-500 hover:shadow-xl cursor-pointer'}`;
+                card.innerHTML = `
+                    <div class="text-xs font-bold text-indigo-500 mb-1">${lvl.class}</div>
+                    <h3 class="text-xl font-black text-slate-800">${lvl.id}. ${lvl.title}</h3>
+                    <p class="text-sm text-slate-500 mt-2">${isLocked ? 'Locked' : 'Available'}</p>
+                `;
+                if (!isLocked) card.onclick = () => openLevel(lvl.id);
                 dash.appendChild(card);
-            }
-        }
-
-        function loadLevel(id) {
-            const lvl = levels.find(l => l.id === id);
-            document.getElementById('dashboard').classList.add('hidden');
-            document.getElementById('quiz-portal').classList.remove('hidden');
-            document.getElementById('q-title').innerText = lvl.title;
-            document.getElementById('q-desc').innerText = lvl.desc;
-            document.getElementById('q-text').innerText = lvl.q;
-            
-            const optCont = document.getElementById('options');
-            optCont.innerHTML = '';
-            lvl.options.forEach(o => {
-                const b = document.createElement('button');
-                b.className = "p-5 bg-gray-50 border-2 border-gray-100 rounded-xl hover:border-indigo-500 hover:bg-indigo-50 transition text-lg font-bold";
-                b.innerText = o;
-                b.onclick = () => check(o, lvl.ans, lvl.rationale, id);
-                optCont.appendChild(b);
             });
-            document.getElementById('feedback').classList.add('hidden');
         }
 
-        function check(selected, correct, rationale, id) {
-            const fb = document.getElementById('feedback');
-            fb.classList.remove('hidden');
-            if(selected == correct) {
-                fb.className = "mt-8 p-4 rounded-xl bg-green-100 text-green-700 block animate__animated animate__bounceIn";
-                fb.innerHTML = `Correct! ${rationale}`;
-                if(id == unlocked && unlocked < 10) {
-                    unlocked++;
-                    localStorage.setItem('algebraUnlocked', unlocked);
+        function openLevel(id) {
+            const lvl = curriculum.find(l => l.id === id);
+            document.getElementById('dashboard').classList.add('hidden');
+            document.getElementById('portal').classList.remove('hidden');
+            
+            document.getElementById('lesson-title').innerText = lvl.title;
+            document.getElementById('lesson-text').innerText = lvl.lesson;
+            document.getElementById('question-text').innerText = lvl.q;
+            
+            const grid = document.getElementById('options-grid');
+            grid.innerHTML = '';
+            lvl.options.forEach(opt => {
+                const b = document.createElement('button');
+                b.className = "p-5 bg-white border-2 border-slate-100 rounded-2xl hover:border-indigo-600 hover:bg-indigo-50 font-bold text-slate-700 transition-all";
+                b.innerText = opt;
+                b.onclick = () => check(opt, lvl.ans, id);
+                grid.appendChild(b);
+            });
+        }
+
+        function check(val, correct, id) {
+            const fb = document.getElementById('feedback-msg');
+            fb.classList.remove('hidden', 'bg-red-100', 'text-red-700', 'bg-green-100', 'text-green-700', 'animate__shakeX', 'animate__bounceIn');
+            
+            if(val === correct) {
+                fb.innerText = "🌟 EXCELLENT! Mastered.";
+                fb.classList.add('bg-green-100', 'text-green-700', 'animate__bounceIn');
+                if(id === unlockedLevel && unlockedLevel < curriculum.length) {
+                    unlockedLevel++;
+                    localStorage.setItem('algebraLevel', unlockedLevel);
+                } else if (id === curriculum.length) {
+                    setTimeout(() => {
+                        document.getElementById('portal').classList.add('hidden');
+                        document.getElementById('success-screen').classList.remove('hidden');
+                    }, 1500);
+                    return;
                 }
-                setTimeout(goHome, 2500);
+                setTimeout(closePortal, 1500);
             } else {
-                fb.className = "mt-8 p-4 rounded-xl bg-red-100 text-red-700 block animate__animated animate__shakeX";
-                fb.innerHTML = `Try again! Hint: ${rationale}`;
+                fb.innerText = "❌ Not quite. Look at the lesson above!";
+                fb.classList.add('bg-red-100', 'text-red-700', 'animate__shakeX');
             }
         }
 
-        function goHome() {
+        function closePortal() {
             document.getElementById('dashboard').classList.remove('hidden');
-            document.getElementById('quiz-portal').classList.add('hidden');
-            init();
+            document.getElementById('portal').classList.add('hidden');
+            initDashboard();
         }
 
-        init();
+        function restart() {
+            localStorage.clear();
+            location.reload();
+        }
+
+        initDashboard();
     </script>
 </body>
 </html>
