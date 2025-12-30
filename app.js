@@ -29,11 +29,34 @@ function selectClass(num) {
 function selectSub(sub) {
     active.sub = sub;
     nav('view-chapters');
-    const chapters = Object.keys(window.mathsData[`class${active.class}`] || {});
-    document.getElementById('view-chapters').innerHTML = chapters.map(ch => 
-        `<div onclick="selectChapter('${ch}')" class="bg-white p-6 rounded-2xl shadow cursor-pointer font-bold hover:bg-indigo-50">${ch}</div>`
+    const container = document.getElementById('view-chapters');
+    
+    // Determine which data library to use
+    let library;
+    if (sub === "Maths") library = window.mathsData;
+    else if (sub === "Physics" || sub === "Chemistry" || sub === "Biology" || sub === "Science") library = window.scienceData;
+
+    // Fetch chapters for the specific class
+    const classKey = `class${active.class}`;
+    const chapters = library && library[classKey] ? Object.keys(library[classKey]) : [];
+
+    if (chapters.length === 0) {
+        container.innerHTML = `
+            <div class="col-span-full p-10 text-center">
+                <p class="text-slate-400 mb-4">No chapters found for Class ${active.class} ${sub} yet.</p>
+                <button onclick="nav('view-subjects')" class="text-indigo-600 font-bold underline">Go Back</button>
+            </div>`;
+        return;
+    }
+
+    container.innerHTML = `<h2 class="col-span-full text-xl font-bold mb-4">Select Chapter</h2>` + 
+    chapters.map(ch => 
+        `<div onclick="selectChapter('${ch}')" class="bg-white p-6 rounded-2xl shadow-md border-b-4 border-indigo-200 cursor-pointer font-bold hover:bg-indigo-50 transition">
+            ${ch}
+        </div>`
     ).join('');
 }
+
 
 function selectChapter(ch) {
     active.ch = ch;
