@@ -1,0 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@700&display=swap');
+
+body { font-family: 'Inter', sans-serif; }
+.gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+.math-display { font-family: 'JetBrains Mono', monospace; }
+.sidebar { transition: transform 0.4s ease; transform: translateX(100%); z-index: 1000; }
+.sidebar.open { transform: translateX(0); }
+.punish-shake { animation: shake 0.5s; }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
