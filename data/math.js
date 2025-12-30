@@ -1,40 +1,36 @@
 // data/maths.js
-const mathsData = {
-    class1: { "Arithmetic Basics": { level1: [], level2: [], level3: [] } },
-    class5: { "Decimals & Fractions": { level1: [], level2: [], level3: [] } },
-    class10: { "Trigonometry": { level1: [], level2: [], level3: [] } }
-    // Add more classes/chapters here following this same structure
+window.mathsData = {
+    class1: {
+        "Addition": {
+            "Basic Sums": { "Easy": [], "Moderate": [], "Tough": [] }
+        }
+    },
+    class10: {
+        "Algebra": {
+            "Quadratic Equations": { "Easy": [], "Moderate": [], "Tough": [] }
+        }
+    }
 };
 
-function generateMathLibrary() {
-    // Logic for Class 1 Addition
-    for (let i = 0; i < 100; i++) {
-        let a1 = Math.floor(Math.random() * 9) + 1;
-        let b1 = Math.floor(Math.random() * 9) + 1;
-        mathsData.class1["Arithmetic Basics"].level1.push({
-            q: `${a1} + ${b1} = ?`,
-            a: (a1 + b1).toString(),
-            opts: shuffle([a1+b1, a1+b1+1, a1+b1-1, a1+b1+2])
+// AUTO-GENERATOR FOR CLASS 10 ALGEBRA
+function generateAlgebra() {
+    const qCount = 100;
+    const target = window.mathsData.class10.Algebra["Quadratic Equations"];
+
+    for(let i=0; i<qCount; i++) {
+        // Easy: Find roots of (x-a)(x-b)=0
+        let r1 = Math.floor(Math.random() * 10) + 1;
+        let r2 = Math.floor(Math.random() * 10) + 1;
+        target.Easy.push({
+            q: `Find roots of: (x - ${r1})(x - ${r2}) = 0`,
+            a: `${r1}, ${r2}`,
+            opts: [`${r1}, ${r2}`, `${r1}, -${r2}`, `-${r1}, ${r2}`, `0, ${r1+r2}`]
         });
 
-        // Level 2: Double Digits
-        let a2 = Math.floor(Math.random() * 50) + 10;
-        let b2 = Math.floor(Math.random() * 50) + 10;
-        mathsData.class1["Arithmetic Basics"].level2.push({
-            q: `${a2} + ${b2} = ?`,
-            a: (a2 + b2).toString(),
-            opts: shuffle([a2+b2, a2+b2+10, a2+b2-5, a2+b2+15])
-        });
-    }
-
-    // Logic for Class 10 Trigonometry (Static-Generated Hybrid)
-    for (let i = 0; i < 50; i++) {
-        mathsData.class10["Trigonometry"].level1.push({
-            q: `What is Sin(90°)?`, a: "1", opts: ["0", "1", "1/2", "Undefined"]
-        });
+        // Tough: General ax^2 + bx + c = 0
+        // ... Logic for more complex generation goes here
     }
 }
 
-function shuffle(arr) { return arr.map(String).sort(() => Math.random() - 0.5); }
-generateMathLibrary();
-window.mathsData = mathsData;
+// 
+generateAlgebra();
