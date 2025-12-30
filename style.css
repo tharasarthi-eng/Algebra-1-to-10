@@ -1,9 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@700&display=swap');
+.gradient-bg { background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%); }
+.sidebar-open { transform: translateX(0) !important; }
+.card-zoom { transition: transform 0.2s; }
+.card-zoom:hover { transform: scale(1.03); }
 
-body { font-family: 'Inter', sans-serif; }
-.gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
-.math-display { font-family: 'JetBrains Mono', monospace; }
-.sidebar { transition: transform 0.4s ease; transform: translateX(100%); z-index: 1000; }
-.sidebar.open { transform: translateX(0); }
-.punish-shake { animation: shake 0.5s; }
-@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+/* Lock Overlay Styles */
+.locked-level { filter: grayscale(1); opacity: 0.6; pointer-events: none; position: relative; }
+.lock-icon { position: absolute; top: 10px; right: 10px; }
