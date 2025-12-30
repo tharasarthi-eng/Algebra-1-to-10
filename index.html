@@ -3,90 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>teachingvks. | Universal Portal</title>
-    
+    <title>teachingvks. | Universal Learning Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-slate-50 min-h-screen font-sans">
+<body class="bg-slate-50 min-h-screen">
 
-    <nav class="gradient-bg text-white p-5 shadow-2xl sticky top-0 z-50 flex justify-between items-center px-8">
-        <h1 onclick="goHome()" class="text-3xl font-black tracking-tighter cursor-pointer hover:text-indigo-400 transition">
-            teachingvks<span class="text-indigo-500">.</span>
-        </h1>
-        
+    <nav class="bg-slate-900 text-white p-5 shadow-2xl sticky top-0 z-50 flex justify-between items-center px-8">
+        <h1 onclick="goHome()" class="text-3xl font-black cursor-pointer">teachingvks<span class="text-indigo-500">.</span></h1>
         <div class="flex items-center gap-6">
-            <div class="hidden lg:flex gap-4 border-l border-slate-700 pl-6">
-                <div class="text-center">
-                    <p class="text-[9px] uppercase font-bold text-slate-400 tracking-widest">Practice Credits</p>
-                    <p id="nav-prac-pts" class="text-emerald-400 font-black text-lg">0</p>
-                </div>
-                <div class="text-center border-l border-slate-800 pl-4">
-                    <p class="text-[9px] uppercase font-bold text-slate-400 tracking-widest">Exam Karma</p>
-                    <p id="nav-test-pts" class="text-amber-400 font-black text-lg">0</p>
-                </div>
+            <div class="text-center px-4 border-r border-slate-700">
+                <p class="text-[9px] uppercase font-bold text-slate-400">Credits</p>
+                <p id="nav-prac-pts" class="text-emerald-400 font-black">0</p>
             </div>
-            <button onclick="showToppers()" class="bg-amber-500 hover:bg-amber-400 text-slate-900 px-4 py-2 rounded-xl font-bold text-xs shadow-lg transition transform active:scale-95">🏆 Topper's Gallery</button>
-            <button onclick="toggleSidebar()" class="bg-indigo-600 hover:bg-indigo-500 px-6 py-2 rounded-xl font-bold text-sm shadow-xl transition">📊 Analysis</button>
+            <button onclick="showToppers()" class="bg-amber-500 text-slate-900 px-4 py-2 rounded-xl font-bold text-xs">🏆 Topper's Gallery</button>
+            <button onclick="toggleSidebar()" class="bg-indigo-600 px-6 py-2 rounded-xl font-bold text-sm">📊 Stats</button>
         </div>
     </nav>
 
-    <div class="bg-indigo-900 text-white p-2 text-[10px] font-bold tracking-widest uppercase flex justify-center items-center gap-4">
-        <span>Daily Goal Progress: <span id="goal-count">0/20</span> Questions</span>
-        <div class="w-32 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-            <div id="goal-bar" class="h-full bg-emerald-400 transition-all duration-500" style="width: 0%"></div>
-        </div>
-    </div>
-
-    <div id="sidebar" class="fixed top-0 right-0 h-full w-full md:w-[450px] bg-white shadow-2xl p-8 sidebar overflow-y-auto">
-        <div class="flex justify-between items-center mb-8 border-b pb-4">
-            <h2 class="text-2xl font-black">Learning Analysis</h2>
-            <button onclick="toggleSidebar()" class="text-slate-400 hover:text-black text-4xl">&times;</button>
-        </div>
-        <div class="h-64 mb-6">
-            <canvas id="skillChart"></canvas>
-        </div>
-        <div id="stats-container" class="space-y-4">
-            </div>
-        <button onclick="resetData()" class="mt-12 w-full text-xs text-slate-300 underline text-center">Reset All Learning Progress</button>
-    </div>
-
     <main class="max-w-6xl mx-auto p-6 mt-4">
-        <div id="main-view-container">
-            <div id="view-classes" class="grid grid-cols-2 md:grid-cols-5 gap-6 animate__animated animate__fadeIn"></div>
-            <div id="view-subjects" class="hidden grid grid-cols-1 md:grid-cols-3 gap-8 animate__animated animate__fadeIn"></div>
-            <div id="view-levels" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 animate__animated animate__fadeIn"></div>
-            <div id="view-toppers" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate__animated animate__fadeIn"></div>
-        </div>
+        <div id="view-classes" class="grid grid-cols-2 md:grid-cols-5 gap-6 animate__animated animate__fadeIn"></div>
+        
+        <div id="view-subjects" class="hidden grid grid-cols-1 md:grid-cols-3 gap-8 animate__animated animate__fadeIn"></div>
+        
+        <div id="view-chapters" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 animate__animated animate__fadeIn"></div>
+        
+        <div id="view-levels" class="hidden grid grid-cols-1 md:grid-cols-2 gap-6 animate__animated animate__fadeIn"></div>
 
         <div id="portal" class="hidden max-w-3xl mx-auto animate__animated animate__zoomIn">
             <div id="portal-card" class="bg-white rounded-[3rem] shadow-2xl overflow-hidden border">
-                <div class="p-6 bg-slate-50 border-b flex justify-between items-center px-10">
-                    <div class="flex flex-col">
-                        <span id="p-sub" class="text-[10px] font-black text-indigo-500 uppercase tracking-widest"></span>
-                        <span id="p-title" class="text-xl font-black text-slate-800"></span>
+                <div class="p-8 bg-slate-50 border-b flex justify-between items-center">
+                    <div>
+                        <p id="p-sub" class="text-xs font-black text-indigo-500 uppercase"></p>
+                        <h2 id="p-title" class="text-xl font-bold"></h2>
                     </div>
-                    <div id="p-timer" class="text-rose-500 font-mono text-2xl bg-rose-50 px-5 py-2 rounded-2xl hidden">02:00</div>
+                    <div id="p-timer" class="text-rose-500 font-mono text-2xl bg-rose-50 px-5 py-2 rounded-2xl hidden">00:00</div>
                 </div>
                 <div class="p-10 text-center">
                     <div id="p-diff" class="inline-block px-4 py-1 rounded-full text-[10px] font-black uppercase mb-6"></div>
-                    <div id="q-box" class="math-display text-4xl font-bold py-16 bg-slate-900 text-indigo-300 rounded-[2.5rem] mb-10 shadow-inner px-6"></div>
+                    <div id="q-box" class="math-display text-4xl font-bold py-16 bg-slate-900 text-indigo-300 rounded-[2.5rem] mb-10 px-6 leading-relaxed"></div>
                     <div id="opts-grid" class="grid grid-cols-1 gap-4"></div>
-                    <div id="feedback" class="mt-8 p-6 rounded-2xl hidden font-black animate__animated"></div>
-                    <button id="next-btn" onclick="handleNext()" class="hidden w-full mt-8 p-6 bg-indigo-600 text-white rounded-[1.5rem] font-black text-xl shadow-xl hover:bg-indigo-700 transition">Continue Journey &rarr;</button>
+                    <div id="feedback" class="mt-8 p-6 rounded-2xl hidden font-bold animate__animated"></div>
+                    <button id="next-btn" onclick="nextQuestion()" class="hidden w-full mt-8 p-6 bg-indigo-600 text-white rounded-[1.5rem] font-black text-xl shadow-xl">Continue &rarr;</button>
                 </div>
             </div>
         </div>
     </main>
 
+    <div id="sidebar" class="fixed top-0 right-0 h-full w-full md:w-[400px] bg-white shadow-2xl p-8 sidebar overflow-y-auto">
+        <h2 class="text-2xl font-black mb-6">Your Performance</h2>
+        <canvas id="skillChart" class="mb-8"></canvas>
+        <button onclick="toggleSidebar()" class="w-full py-4 bg-slate-900 text-white rounded-xl font-bold">Close Analysis</button>
+    </div>
+
     <script src="data/maths.js"></script>
-    <script src="data/science.js"></script>
-    <script src="data/english.js"></script>
-    <script src="data/social.js"></script>
-    
     <script src="app.js"></script>
 </body>
 </html>
