@@ -1,118 +1,128 @@
-let db = JSON.parse(localStorage.getItem('vks_master')) || { unlocked: {}, pts: 0 };
-let active = { class: 0, sub: '', ch: '', tp: '', lvl: '', limit: 10, qIdx: 0, score: 0, isTest: false };
-let timer;
+let db = JSON.parse(localStorage.getItem('vks_data')) || { unlocked: {}, pts: 0 };
+let active = { class: 0, sub: '', ch: '', tp: '', lvl: '', qIdx: 0, score: 0, pool: [] };
 
-function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); }
+// THE FILE MAP: Connects Chapter Names to JS files
+const fileMap = {
+    class1: {
+        "1. Shapes and Space": "data/maths/class1/c1_ch1_shapes.js",
+        "2. Numbers from 1 to 9": "data/maths/class1/c1_ch2_numbers.js"
+    },
+    class10: {
+        "4. Quadratic Equations": "data/maths/class10/c10_ch4_quadratic.js"
+    }
+    // Continue adding your chapters here...
+};
+
 function showView(id) {
     document.querySelectorAll('main > div').forEach(d => d.classList.add('hidden'));
     document.getElementById(id).classList.remove('hidden');
 }
 
-function render() {
-    const v = document.getElementById('view-classes');
-    for (let i = 1; i <= 10; i++) {
-        v.innerHTML += `<div onclick="selectClass(${i})" class="bg-white p-10 rounded-3xl shadow-sm border hover:border-indigo-600 cursor-pointer text-center font-black text-3xl transition transform hover:-translate-y-1">${i}</div>`;
-    }
-    document.getElementById('nav-pts').innerText = db.pts;
+// Select Class
+function selectClass(n) {
+    active.class = n;
+    showView('view-subjects');
+    const subs = ["Maths", "Science", "English"];
+    document.getElementById('view-subjects').innerHTML = subs.map(s => `
+        <div onclick="selectSub('${s}')" class="p-10 bg-white rounded-3xl shadow cursor-pointer font-black text-center border-b-8 border-indigo-100">${s}</div>
+    `).join('');
 }
 
-function selectClass(n) { active.class = n; showView('view-subjects'); 
-    const subs = n >= 9 ? ["Maths", "Physics", "Chemistry", "Biology"] : ["Maths", "Science", "English"];
-    document.getElementById('view-subjects').innerHTML = subs.map(s => `<div onclick="selectSub('${s}')" class="bg-white p-10 rounded-3xl shadow text-center cursor-pointer font-bold text-xl border-b-8 border-indigo-100">${s}</div>`).join('');
-    updateBread(`Class ${n}`);
+// Select Subject -> Load Chapter List
+function selectSub(s) {
+    active.sub = s;
+    showView('view-chapters');
+    const chapters = Object.keys(fileMap[`class${active.class}`] || {});
+    document.getElementById('view-chapters').innerHTML = chapters.map(ch => `
+        <div onclick="loadChapterFile('${ch}')" class="p-6 bg-white rounded-2xl shadow font-bold border-l-8 border-indigo-600 cursor-pointer hover:bg-indigo-50">${ch}</div>
+    `).join('') || "Coming Soon";
 }
 
-function selectSub(s) { active.sub = s; showView('view-chapters');
-    const lib = (s === 'Maths') ? window.mathsData : {};
-    const chapters = Object.keys(lib[`class${active.class}`] || {});
-    document.getElementById('view-chapters').innerHTML = chapters.map(ch => `<div onclick="selectChapter('${ch}')" class="bg-white p-8 rounded-2xl shadow border-l-8 border-indigo-600 font-bold cursor-pointer hover:bg-indigo-50">${ch}</div>`).join('') || "Coming Soon";
-    updateBread(`Class ${active.class} > ${s}`);
+// DYNAMIC LOADER: Fetches the specific .js file
+function loadChapterFile(ch) {
+    active.ch = ch;
+    const path = fileMap[`class${active.class}`][ch];
+    
+    // Remove old script if exists
+    const oldScript = document.getElementById('data-script');
+    if(oldScript) oldScript.remove();
+
+    const script = document.createElement('script');
+    script.id = 'data-script';
+    script.src = path;
+    script.onload = () => {
+        // window.currentChapterData is now available from the loaded file
+        renderTopics();
+    };
+    document.head.appendChild(script);
 }
 
-function selectChapter(ch) { active.ch = ch; showView('view-topics');
-    const topics = Object.keys(window.mathsData[`class${active.class}`][ch]);
-    document.getElementById('view-topics').innerHTML = topics.map(t => `<div onclick="selectTopic('${t}')" class="bg-white p-8 rounded-2xl shadow border-l-8 border-emerald-500 font-bold cursor-pointer">${t}</div>`).join('');
-    updateBread(`Class ${active.class} > ${active.sub} > ${ch}`);
+function renderTopics() {
+    showView('view-topics');
+    const topics = Object.keys(window.currentChapterData);
+    document.getElementById('view-topics').innerHTML = topics.map(t => `
+        <div onclick="selectTopic('${t}')" class="p-6 bg-white rounded-2xl shadow border-l-8 border-emerald-500 font-bold cursor-pointer">${t}</div>
+    `).join('');
 }
 
-function selectTopic(t) { active.tp = t; showView('view-levels');
+function selectTopic(t) {
+    active.tp = t;
+    showView('view-levels');
     const lvls = ["Easy", "Moderate", "Tough"];
-    document.getElementById('view-levels').innerHTML = lvls.map(l => {
-        const key = `${active.class}_${active.sub}_${active.ch}_${active.tp}_${l}`;
-        const isLocked = l !== "Easy" && !db.unlocked[key];
-        return `<div onclick="${isLocked ? `promptUnlock('${l}')` : `openConfig('${l}')`}" class="bg-white p-10 rounded-3xl shadow border-2 ${isLocked ? 'opacity-50' : 'border-indigo-100 hover:border-indigo-600 cursor-pointer'} text-center transition">
-            <h4 class="text-2xl font-black">${l}</h4>
-            <p class="text-[10px] mt-2 font-bold ${isLocked ? 'text-rose-500' : 'text-emerald-500'}">${isLocked ? 'LOCKED (Pass 7/10 Test)' : 'UNLOCKED'}</p>
-        </div>`;
-    }).join('');
+    document.getElementById('view-levels').innerHTML = lvls.map(l => `
+        <div onclick="startPractice('${l}')" class="p-10 bg-white border-2 border-indigo-500 rounded-[2rem] text-center font-black cursor-pointer">${l}</div>
+    `).join('');
 }
 
-function openConfig(l) { active.lvl = l; active.isTest = false; document.getElementById('config-modal').classList.remove('hidden'); }
-function promptUnlock(l) { if(confirm(`Unlock ${l} with a 10-Question Skip Test (70% required)?`)) { active.lvl = l; active.isTest = true; active.limit = 10; startSession(); } }
-
-function startSession() {
-    if(!active.isTest) active.limit = document.getElementById('q-range').value;
-    document.getElementById('config-modal').classList.add('hidden');
-    showView('portal'); active.qIdx = 0; active.score = 0;
-    if(active.isTest) startTimer();
+function startPractice(l) {
+    active.lvl = l;
+    active.qIdx = 0;
+    active.score = 0;
+    active.pool = window.currentChapterData[active.tp][l];
+    showView('portal');
     loadQuestion();
 }
 
 function loadQuestion() {
-    const pool = window.mathsData[`class${active.class}`][active.ch][active.tp][active.lvl];
-    active.currQ = pool[Math.floor(Math.random() * pool.length)];
-    document.getElementById('q-box').innerText = active.currQ.q;
-    document.getElementById('p-label').innerText = `${active.ch} > ${active.tp} [${active.lvl}]`;
-    const grid = document.getElementById('opts-grid'); grid.innerHTML = '';
-    active.currQ.opts.forEach(o => {
+    const qData = active.pool[active.qIdx];
+    document.getElementById('p-label').innerText = `${active.tp} > ${active.lvl}`;
+    document.getElementById('q-box').innerText = qData.q;
+    
+    const grid = document.getElementById('opts-grid');
+    grid.innerHTML = '';
+    qData.opts.forEach(o => {
         const b = document.createElement('button');
-        b.className = "p-5 bg-white border-2 border-slate-100 rounded-2xl font-bold hover:border-indigo-600 transition text-slate-800";
-        b.innerText = o; b.onclick = () => check(o, b); grid.appendChild(b);
+        b.className = "p-5 border-2 rounded-2xl font-bold hover:bg-indigo-50 transition text-slate-800";
+        b.innerText = o;
+        b.onclick = () => check(o, qData.a);
+        grid.appendChild(b);
     });
-    document.getElementById('feedback').classList.add('hidden');
     document.getElementById('next-btn').classList.add('hidden');
+    document.getElementById('feedback').classList.add('hidden');
 }
 
-function check(val, btn) {
+function check(val, ans) {
     const fb = document.getElementById('feedback');
     fb.classList.remove('hidden', 'bg-emerald-100', 'bg-rose-100');
-    if(val == active.currQ.a) { 
-        fb.innerText = "⭐ CORRECT! +10 Credits"; fb.classList.add('bg-emerald-100', 'text-emerald-700');
-        active.score++; db.pts += 10; 
-        document.getElementById('next-btn').classList.remove('hidden');
-    } else { 
-        fb.innerText = "WRONG! -5 Credits"; fb.classList.add('bg-rose-100', 'text-rose-700');
-        db.pts = Math.max(0, db.pts - 5); 
+    if(val == ans) {
+        fb.innerText = "⭐ CORRECT!"; fb.classList.add('bg-emerald-100', 'text-emerald-700');
+        active.score++;
+    } else {
+        fb.innerText = "❌ WRONG!"; fb.classList.add('bg-rose-100', 'text-rose-700');
     }
-    document.getElementById('nav-pts').innerText = db.pts;
-    localStorage.setItem('vks_master', JSON.stringify(db));
+    document.getElementById('next-btn').classList.remove('hidden');
 }
 
-function handleNext() { 
-    active.qIdx++; 
-    if(active.qIdx < active.limit) { loadQuestion(); }
-    else { 
-        if(active.isTest && active.score >= 7) { 
-            db.unlocked[`${active.class}_${active.sub}_${active.ch}_${active.tp}_${active.lvl}`] = true; 
-            alert("Congratulations! Level Unlocked."); 
-        } else if(active.isTest) {
-            alert("Score too low to unlock level.");
-        }
-        location.reload(); 
+function handleNext() {
+    active.qIdx++;
+    if(active.qIdx < active.pool.length) loadQuestion();
+    else { alert("Finish!"); location.reload(); }
+}
+
+// Initial Render of Classes
+(function(){
+    const v = document.getElementById('view-classes');
+    for(let i=1; i<=10; i++) {
+        v.innerHTML += `<div onclick="selectClass(${i})" class="p-10 bg-white shadow rounded-[2rem] text-center font-black text-3xl cursor-pointer hover:bg-indigo-600 hover:text-white transition">${i}</div>`;
     }
-}
-
-function startTimer() { 
-    document.getElementById('timer').classList.remove('hidden');
-    let sec = 120;
-    timer = setInterval(() => {
-        let m = Math.floor(sec/60); let s = sec%60;
-        document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
-        if(sec <= 0) { alert("Time Up!"); location.reload(); }
-        sec--;
-    }, 1000);
-}
-
-function updateBread(t) { document.getElementById('breadcrumb').innerText = t; }
-document.getElementById('q-range').oninput = function() { document.getElementById('q-val').innerText = this.value; };
-render();
+})();
