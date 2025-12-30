@@ -111,6 +111,23 @@ const syllabus = {
     }
 };
 
+function goBack() {
+    if (navStack.length === 0) return;
+
+    // Check if we are currently in the quiz
+    const portal = document.getElementById('portal');
+    if (!portal.classList.contains('hidden')) {
+        if (!confirm("Exit quiz? Points from this unfinished set won't be saved to your history.")) {
+            return; // If they click 'Cancel', nothing happens
+        }
+    }
+
+    const prevView = navStack.pop();
+    showView(prevView, true);
+    updateDashboard();
+}
+
+
 
 function toggleMenu() {
     const isVisible = !document.getElementById('side-menu').classList.contains('-translate-x-full');
