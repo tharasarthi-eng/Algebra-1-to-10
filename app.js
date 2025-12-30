@@ -7,10 +7,100 @@ const syllabus = {
         "1. Shapes and Space": "c1_ch1_shapes.js",
         "2. Numbers 1 to 9": "c1_ch2_numbers1to9.js",
         "3. Addition": "c1_ch3_addition.js",
-        "4. Subtraction": "c1_ch4_subtraction.js"
+        "4. Subtraction": "c1_ch4_subtraction.js",
+        "5. Numbers 10 to 20": "c1_ch5_numbers10to20.js",
+        "6. Measurement": "c1_ch6_measurement.js",
+        "7. Time": "c1_ch7_time.js",
+        "8. Money": "c1_ch8_money.js"
+    },
+    class2: {
+        "1. Numbers up to 100": "c2_ch1_numbers100.js",
+        "2. Addition & Subtraction": "c2_ch2_ops.js",
+        "3. Multiplication": "c2_ch3_multiplication.js",
+        "4. Division": "c2_ch4_division.js",
+        "5. Lines and Shapes": "c2_ch5_shapes.js",
+        "6. Measurement (m/kg)": "c2_ch6_measurement.js",
+        "7. Time & Calendar": "c2_ch7_time.js",
+        "8. Money": "c2_ch8_money.js"
+    },
+    class3: {
+        "1. Numbers up to 1000": "c3_ch1_numbers1000.js",
+        "2. Four Operations": "c3_ch2_operations.js",
+        "3. Fractions Intro": "c3_ch3_fractions.js",
+        "4. Geometry: 2D/3D": "c3_ch4_geometry.js",
+        "5. Measurement Units": "c3_ch5_measurement.js",
+        "6. Time & Money": "c3_ch6_time_money.js",
+        "7. Data Handling": "c3_ch7_data.js"
+    },
+    class4: {
+        "1. Numbers & Place Value": "c4_ch1_numbers.js",
+        "2. Multiples & Factors": "c4_ch2_factors.js",
+        "3. Fractions & Decimals": "c4_ch3_frac_dec.js",
+        "4. Angles & Triangles": "c4_ch4_geometry.js",
+        "5. Area & Perimeter": "c4_ch5_mensuration.js",
+        "6. Patterns": "c4_ch6_patterns.js"
+    },
+    class5: {
+        "1. Large Numbers": "c5_ch1_numbers.js",
+        "2. Fractions Operations": "c5_ch2_fractions.js",
+        "3. Decimals & Percentage": "c5_ch3_dec_perc.js",
+        "4. Volume & Capacity": "c5_ch4_volume.js",
+        "5. Symmetry & Nets": "c5_ch5_geometry.js",
+        "6. Average & Ratio": "c5_ch6_ratio.js"
+    },
+    class6: {
+        "1. Knowing Our Numbers": "c6_ch1_knowing_nums.js",
+        "2. Integers": "c6_ch2_integers.js",
+        "3. Basic Geometry": "c6_ch3_geometry.js",
+        "4. Fractions & Decimals": "c6_ch4_frac_dec.js",
+        "5. Algebra Intro": "c6_ch5_algebra.js",
+        "6. Ratio & Proportion": "c6_ch6_ratio.js",
+        "7. Mensuration": "c6_ch7_mensuration.js"
+    },
+    class7: {
+        "1. Integers Properties": "c7_ch1_integers.js",
+        "2. Fractions & Decimals": "c7_ch2_frac_dec.js",
+        "3. Simple Equations": "c7_ch3_equations.js",
+        "4. Lines & Angles": "c7_ch4_lines_angles.js",
+        "5. Triangle Properties": "c7_ch5_triangles.js",
+        "6. Comparing Quantities": "c7_ch6_comparison.js",
+        "7. Rational Numbers": "c7_ch7_rational.js",
+        "8. Exponents & Powers": "c7_ch8_exponents.js"
+    },
+    class8: {
+        "1. Rational Numbers": "c8_ch1_rational.js",
+        "2. Linear Equations (1 Var)": "c8_ch2_linear_eq.js",
+        "3. Quadrilaterals": "c8_ch3_geometry.js",
+        "4. Squares & Cubes": "c8_ch4_squares_cubes.js",
+        "5. Algebraic Expressions": "c8_ch5_algebra.js",
+        "6. Mensuration 3D": "c8_ch6_mensuration.js",
+        "7. Direct & Inverse Proportions": "c8_ch7_proportions.js"
+    },
+    class9: {
+        "1. Number Systems": "c9_ch1_numbers.js",
+        "2. Polynomials": "c9_ch2_polynomials.js",
+        "3. Coordinate Geometry": "c9_ch3_coord_geo.js",
+        "4. Linear Eq in 2 Variables": "c9_ch4_linear_2v.js",
+        "5. Lines, Angles & Triangles": "c9_ch5_triangles.js",
+        "6. Quadrilaterals & Circles": "c9_ch6_circles.js",
+        "7. Heron's Formula": "c9_ch7_herons.js",
+        "8. Surface Area & Volume": "c9_ch8_mensuration.js",
+        "9. Probability": "c9_ch9_probability.js"
+    },
+    class10: {
+        "1. Real Numbers": "c10_ch1_real_numbers.js",
+        "2. Polynomials": "c10_ch2_polynomials.js",
+        "3. Linear Equations": "c10_ch3_linear_eq.js",
+        "4. Quadratic Equations": "c10_ch4_quadratic_eq.js",
+        "5. Arithmetic Progressions": "c10_ch5_ap.js",
+        "6. Triangles (Similarity)": "c10_ch6_triangles.js",
+        "7. Trigonometry": "c10_ch7_trigonometry.js",
+        "8. Circle & Tangents": "c10_ch8_circles.js",
+        "9. Surface Area & Volume": "c10_ch9_mensuration.js",
+        "10. Stats & Probability": "c10_ch10_stats_prob.js"
     }
-    // Continue adding other classes based on the master list provided earlier
 };
+
 
 function init() {
     const v = document.getElementById('view-classes');
