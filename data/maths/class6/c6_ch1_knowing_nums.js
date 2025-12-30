@@ -123,4 +123,89 @@ window.currentChapterData = {
             // ... 20 more
         ]
     }
+// Append this to your existing window.currentChapterData object
+window.currentChapterData["BODMAS & Brackets"] = {
+    "Easy": [
+        { q: "Solve: (10 + 5) - 2", a: "13", opts: ["13", "17", "10", "3"] },
+        { q: "Solve: 10 + 5 * 2", a: "20", opts: ["30", "20", "25", "15"] },
+        { q: "Solve: 20 / (2 + 2)", a: "5", opts: ["12", "5", "8", "10"] },
+        { q: "Solve: 8 + 4 / 2", a: "10", opts: ["6", "10", "12", "8"] },
+        { q: "Solve: (9 - 3) * 4", a: "24", opts: ["18", "24", "12", "30"] },
+        { q: "In BODMAS, 'B' stands for?", a: "Brackets", opts: ["Base", "Brackets", "Big", "Bottom"] },
+        { q: "Solve: 15 - (5 + 5)", a: "5", opts: ["5", "10", "15", "0"] },
+        { q: "Solve: 2 * 3 + 4", a: "10", opts: ["14", "10", "9", "12"] },
+        { q: "Solve: 100 / 10 + 5", a: "15", opts: ["15", "6", "10", "20"] },
+        { q: "Solve: 7 + (8 * 0)", a: "7", opts: ["15", "7", "0", "8"] },
+        // ... (Remaining 20 Easy questions)
+    ],
+    "Moderate": [
+        { q: "Solve: 120 - 20 * 5", a: "20", opts: ["500", "100", "20", "0"] },
+        { q: "Solve: (10 + 10) / (5 + 5)", a: "2", opts: ["2", "4", "20", "1"] },
+        { q: "Solve: 45 / (12 - 3) * 2", a: "10", opts: ["5", "10", "2.5", "18"] },
+        { q: "Solve: 10 + { 5 + (2 * 3) }", a: "21", opts: ["21", "16", "31", "11"] },
+        { q: "Solve: 100 - (10 * 10) + 10", a: "10", opts: ["10", "0", "110", "210"] },
+        { q: "Solve: 15 + 5 * (10 - 8)", a: "25", opts: ["40", "25", "20", "30"] },
+        { q: "Which bracket is solved first?", a: "Round ()", opts: ["Round ()", "Curly {}", "Square []", "Bar"] },
+        { q: "Solve: (8 + 8) / 8 + 8", a: "10", opts: ["10", "9", "2", "16"] },
+        { q: "Solve: 72 / 9 / 2", a: "4", opts: ["16", "8", "4", "2"] },
+        { q: "Solve: 50 - 5 * 5 + 5", a: "30", opts: ["30", "0", "25", "50"] },
+        // ... (Remaining 20 Moderate questions)
+    ],
+    "Tough": [
+        { q: "Solve: 100 - [ 20 + { 10 - (5 - 3) } ]", a: "72", opts: ["72", "68", "82", "60"] },
+        { q: "Solve: 1/2 of (40 + 60) - 25", a: "25", opts: ["25", "75", "50", "0"] },
+        { q: "Find x: (x + 5) * 2 = 20", a: "5", opts: ["5", "10", "15", "0"] },
+        { q: "Solve: 5 + 5 * 5 / 5 - 5", a: "5", opts: ["5", "0", "25", "10"] },
+        { q: "Solve: 99 + 99 / 99 - 99", a: "1", opts: ["0", "1", "99", "198"] },
+        { q: "Solve: { (10 * 2) + (10 / 2) } * 2", a: "50", opts: ["50", "25", "40", "60"] },
+        { q: "Evaluate: 4 * [ 15 - { 8 - (6 - 4) } ]", a: "36", opts: ["36", "44", "20", "28"] },
+        { q: "Value of: 10 - 10 * 0 + 10 / 10", a: "11", opts: ["11", "1", "0", "21"] },
+        { q: "Solve: (1000 / 10) / (100 / 10)", a: "10", opts: ["10", "1", "100", "0.1"] },
+        { q: "Is (8+2)*5 same as 8+2*5?", a: "No", opts: ["Yes", "No", "Always", "None"] },
+        // ... (Remaining 20 Tough questions)
+    ]
+};
+
+window.currentChapterData["Word Problems (Real World)"] = {
+    "Easy": [
+        { q: "A box contains 100 pens. How many pens in 15 boxes?", a: "1500", opts: ["150", "1500", "1015", "115"] },
+        { q: "Population of a town is 5,000. 2,000 are men. How many are others?", a: "3000", opts: ["7000", "3000", "2000", "5000"] },
+        { q: "Cost of 1 notebook is ₹20. Cost of 10?", a: "₹200", opts: ["₹20", "₹100", "₹200", "₹30"] },
+        { q: "Distance from A to B is 150km, B to C is 200km. Total A to C?", a: "350km", opts: ["350km", "50km", "300km", "400km"] },
+        { q: "A student needs 35 marks to pass. He got 20. How many more?", a: "15", opts: ["15", "55", "10", "25"] },
+        { q: "If 1kg sugar costs ₹40, how much for 5kg?", a: "₹200", opts: ["₹45", "₹200", "₹240", "₹160"] },
+        { q: "A car covers 60km in 1 hour. How much in 5 hours?", a: "300km", opts: ["120km", "300km", "360km", "65km"] },
+        { q: "There are 40 students in a class. If 5 are absent, how many present?", a: "35", opts: ["45", "35", "30", "40"] },
+        { q: "Total days in 10 weeks?", a: "70", opts: ["70", "10", "17", "100"] },
+        { q: "A dictionary has 1200 pages. You read 200. How many left?", a: "1000", opts: ["1400", "1000", "800", "1200"] },
+        // ... (Remaining 20 Easy)
+    ],
+    "Moderate": [
+        { q: "A machine produces 2825 screws a day. How many in January?", a: "87575", opts: ["84750", "87575", "79100", "90000"] },
+        { q: "A merchant had ₹78,592. She bought 40 radios at ₹1200 each. Left?", a: "₹30,592", opts: ["₹48,000", "₹30,592", "₹38,592", "₹77,392"] },
+        { q: "Distance between school and home is 1km 875m. Walks both ways daily. Distance in 6 days?", a: "22km 500m", opts: ["11km 250m", "22km 500m", "15km", "18km"] },
+        { q: "A vessel has 4L 500ml curd. How many 25ml glasses can be filled?", a: "180", opts: ["100", "180", "150", "200"] },
+        { q: "Total weight of 20 bags of rice, each weighing 45kg 500g?", a: "910kg", opts: ["900kg", "910kg", "950kg", "800kg"] },
+        { q: "Election: Winner got 5,77,500 votes. Rival got 3,48,700. Margin?", a: "2,28,800", opts: ["2,28,800", "9,26,200", "2,30,000", "1,28,800"] },
+        { q: "Multiply 7236 by 65 instead of 56. How much greater is the answer?", a: "65,124", opts: ["65,124", "7,236", "10,000", "65,000"] },
+        { q: "Cost of 1 dozen bananas is ₹60. Cost of 30 bananas?", a: "₹150", opts: ["₹120", "₹150", "₹180", "₹200"] },
+        { q: "A tank holds 500L water. If 12L 500ml is leaked per hour, how much left after 10 hours?", a: "375L", opts: ["375L", "487.5L", "125L", "400L"] },
+        { q: "A book was published in 1998. It is now 2025. How old is the book?", a: "27 years", opts: ["25", "27", "28", "30"] },
+        // ... (Remaining 20 Moderate)
+    ],
+    "Tough": [
+        { q: "Number of people who visited a shrine in two years: 31,10,545 and 45,72,120. Total?", a: "76,82,665", opts: ["76,82,665", "14,61,575", "70,00,000", "80,00,000"] },
+        { q: "The sum of two numbers is 1,10,12,345. If one is 45,67,890, find the other.", a: "64,44,455", opts: ["64,44,455", "54,44,455", "70,00,000", "1,55,00,000"] },
+        { q: "A factory produces 56,78,900 pins in a year. 12,34,500 are defective. Good ones?", a: "44,44,400", opts: ["44,44,400", "69,13,400", "40,00,000", "44,44,000"] },
+        { q: "Divide the greatest 6-digit number by the smallest 3-digit number. Remainder?", a: "99", opts: ["0", "9", "99", "1"] },
+        { q: "Cost of 25 refrigerators is ₹10,00,000. Cost of 1?", a: "₹40,000", opts: ["₹4,000", "₹40,000", "₹25,000", "₹50,000"] },
+        { q: "A wire 20m long is cut into 8 equal pieces. Length of each in cm?", a: "250cm", opts: ["250cm", "2.5cm", "25cm", "200cm"] },
+        { q: "A student multiplied 1234 by 12. He should have used 21. Difference?", a: "11,106", opts: ["11,106", "1,234", "9,000", "10,000"] },
+        { q: "100kg wheat is packed into 2kg 500g packets. How many packets?", a: "40", opts: ["50", "40", "20", "100"] },
+        { q: "Light travels 3,00,000 km in 1 second. Distance in 1 minute?", a: "1,80,00,000 km", opts: ["1,80,00,000", "3,00,000", "6,00,000", "1,00,00,000"] },
+        { q: "Largest 5-digit number minus smallest 4-digit number?", a: "98,999", opts: ["98,999", "99,000", "89,999", "100,000"] },
+        // ... (Remaining 20 Tough)
+    ]
+};
+
 };
