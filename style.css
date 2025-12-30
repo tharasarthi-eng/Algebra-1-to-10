@@ -1,15 +1,23 @@
-/* Custom Scrollbar for the Progress Log */
-#progress-log::-webkit-scrollbar { width: 4px; }
-#progress-log::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-
-/* Subtle Animations */
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-main > div:not(.hidden) { animation: fadeIn 0.4s ease-out; }
-
-#global-back-btn.hidden {
-    display: none;
+/* Smooth View Transitions */
+main > div:not(.hidden) {
+    animation: fadeIn 0.4s ease-out;
 }
 
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-/* Dashboard Slide-In */
-.-translate-x-full { transform: translateX(-100%); }
+/* Side Menu Transition */
+#side-menu {
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.-translate-x-full {
+    transform: translateX(-100%);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f1f1; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
