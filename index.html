@@ -3,70 +3,293 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TeachingVKS | Advanced Learning Portal</title>
+    <title>teachingvks. | Advanced Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .math-display { font-family: 'JetBrains Mono', monospace; }
+        .sidebar { transition: transform 0.4s ease; transform: translateX(100%); z-index: 1000; }
+        .sidebar.open { transform: translateX(0); }
+        .locked-level { filter: grayscale(1); opacity: 0.6; pointer-events: none; }
+        .glass-nav { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body class="bg-slate-100 min-h-screen">
 
-    <nav class="bg-indigo-900 text-white p-4 sticky top-0 z-50 shadow-lg flex justify-between items-center px-8">
-        <h1 onclick="nav('view-classes')" class="text-2xl font-black cursor-pointer tracking-tighter">teachingvks<span class="text-indigo-400">.</span></h1>
+    <nav class="glass-nav text-white p-4 sticky top-0 z-50 shadow-xl flex justify-between items-center px-8">
+        <h1 onclick="goHome()" class="text-2xl font-black cursor-pointer tracking-tighter">
+            teachingvks<span class="text-indigo-400">.</span>
+        </h1>
         
-        <div class="flex items-center gap-4">
-            <div id="economy-stats" class="hidden md:flex gap-4 mr-4 text-xs font-bold">
-                <span class="text-emerald-400">Credits: <span id="user-pts">0</span></span>
+        <div class="flex items-center gap-6">
+            <div class="hidden md:flex gap-4 text-xs font-bold uppercase tracking-widest">
+                <span class="text-emerald-400">Practice Pts: <span id="nav-pts">0</span></span>
             </div>
-            <button onclick="toggleMenu()" class="p-2 bg-indigo-800 rounded-lg hover:bg-indigo-700">
+            <button onclick="toggleMenu()" class="p-2 bg-indigo-600 rounded-xl hover:bg-indigo-500 transition">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
             </button>
         </div>
     </nav>
 
-    <div id="side-menu" class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-[60] p-6 transform translate-x-full transition-transform duration-300">
+    <div id="side-menu" class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl sidebar p-8">
         <div class="flex justify-between items-center mb-8">
-            <h2 class="text-xl font-bold">Menu</h2>
-            <button onclick="toggleMenu()" class="text-2xl">&times;</button>
+            <h2 class="text-2xl font-black">Menu</h2>
+            <button onclick="toggleMenu()" class="text-3xl">&times;</button>
         </div>
-        <ul class="space-y-4 font-semibold">
-            <li onclick="showReport()" class="p-3 hover:bg-indigo-50 rounded-xl cursor-pointer">📊 Performance Report</li>
-            <li onclick="nav('view-toppers')" class="p-3 hover:bg-indigo-50 rounded-xl cursor-pointer">🏆 Toppers Section</li>
-            <li class="p-3 text-slate-300 cursor-not-allowed">🚀 Career Mapping (Soon)</li>
-            <li class="p-3 hover:bg-indigo-50 rounded-xl cursor-pointer">📧 Query Box</li>
+        <ul class="space-y-4">
+            <li onclick="alert('Feature coming soon!')" class="p-4 bg-slate-50 rounded-2xl font-bold cursor-pointer hover:bg-indigo-50">📊 Performance Report</li>
+            <li onclick="navTo('view-toppers')" class="p-4 bg-slate-50 rounded-2xl font-bold cursor-pointer hover:bg-amber-50">🏆 Toppers Section</li>
+            <li class="p-4 bg-slate-100 rounded-2xl font-bold text-slate-400">🚀 Career Mapping</li>
+            <li class="p-4 bg-slate-50 rounded-2xl font-bold cursor-pointer hover:bg-emerald-50">📧 Query Box</li>
         </ul>
     </div>
 
     <main class="max-w-6xl mx-auto p-6">
-        <div id="breadcrumbs" class="mb-6 text-sm text-slate-500 font-medium"></div>
+        
+        <div id="breadcrumbs" class="mb-6 text-xs font-bold text-slate-400 uppercase tracking-widest">Home</div>
 
-        <div id="view-classes" class="grid grid-cols-2 md:grid-cols-5 gap-4"></div>
-        <div id="view-subjects" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6"></div>
-        <div id="view-chapters" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-        <div id="view-topics" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-        <div id="view-levels" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+        <div id="view-classes" class="grid grid-cols-2 md:grid-cols-5 gap-4 animate__animated animate__fadeIn"></div>
+        <div id="view-subjects" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6 animate__animated animate__fadeIn"></div>
+        <div id="view-chapters" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 animate__animated animate__fadeIn"></div>
+        <div id="view-topics" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 animate__animated animate__fadeIn"></div>
+        
+        <div id="view-levels" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6 animate__animated animate__fadeIn"></div>
 
-        <div id="config-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-[100]">
-            <div class="bg-white p-8 rounded-3xl max-w-sm w-full text-center">
-                <h3 class="text-xl font-bold mb-4">Practice Config</h3>
-                <p class="text-sm text-slate-500 mb-6">Select number of questions (Max 100)</p>
-                <input type="range" id="q-range" min="5" max="100" step="5" value="10" class="w-full h-2 bg-indigo-200 rounded-lg appearance-none cursor-pointer mb-2">
-                <div id="q-val" class="font-bold text-indigo-600 mb-6">10 Questions</div>
-                <button onclick="startSession()" class="w-full bg-indigo-600 text-white py-3 rounded-xl font-bold">Start Practice</button>
+        <div id="config-modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-[100] p-4">
+            <div class="bg-white p-8 rounded-[2.5rem] max-w-sm w-full shadow-2xl">
+                <h3 class="text-2xl font-black mb-2 text-center">Setup Session</h3>
+                <p class="text-xs text-slate-500 mb-8 text-center uppercase font-bold tracking-widest">Choose Question Count</p>
+                <input type="range" id="q-range" min="5" max="100" step="5" value="10" class="w-full mb-4 accent-indigo-600">
+                <div id="q-val" class="text-center font-black text-3xl text-indigo-600 mb-8">10</div>
+                <button onclick="startSession()" class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black shadow-lg">START PRACTICE</button>
             </div>
         </div>
 
-        <div id="portal" class="hidden max-w-2xl mx-auto mt-10">
-            <div id="portal-card" class="bg-white rounded-[2.5rem] shadow-2xl border p-10 text-center">
-                <div id="timer" class="text-rose-500 font-mono text-xl mb-4 hidden">02:00</div>
-                <div id="q-box" class="text-3xl font-bold mb-8 min-h-[100px] flex items-center justify-center"></div>
-                <div id="opts-grid" class="grid grid-cols-1 gap-4"></div>
-                <div id="feedback" class="mt-8 p-4 rounded-2xl hidden font-bold"></div>
-                <button id="next-btn" onclick="nextQuestion()" class="hidden w-full mt-8 py-4 bg-indigo-600 text-white rounded-2xl font-bold">Next Question &rarr;</button>
+        <div id="view-toppers" class="hidden p-10 bg-white rounded-3xl shadow text-center">
+            <h2 class="text-3xl font-black mb-4">🏆 Toppers Leaderboard</h2>
+            <p class="text-slate-500 mb-8">Class-wise test files will be integrated here.</p>
+            <button onclick="goHome()" class="text-indigo-600 font-bold underline">Return to Classes</button>
+        </div>
+
+        <div id="portal" class="hidden max-w-2xl mx-auto animate__animated animate__zoomIn">
+            <div id="portal-card" class="bg-white rounded-[3rem] shadow-2xl overflow-hidden border">
+                <div class="p-8 bg-slate-50 border-b flex justify-between items-center">
+                    <div>
+                        <span id="p-label" class="text-[10px] font-black text-indigo-500 uppercase tracking-widest"></span>
+                        <h2 id="p-title" class="text-xl font-bold"></h2>
+                    </div>
+                    <div id="timer" class="text-rose-500 font-mono text-2xl hidden">02:00</div>
+                </div>
+                <div class="p-10 text-center">
+                    <div id="q-box" class="math-display text-4xl font-bold py-16 bg-slate-900 text-indigo-300 rounded-[2.5rem] mb-10 px-6"></div>
+                    <div id="opts-grid" class="grid grid-cols-1 gap-4"></div>
+                    <div id="feedback" class="mt-8 p-6 rounded-2xl hidden font-bold animate__animated"></div>
+                    <button id="next-btn" onclick="nextQuestion()" class="hidden w-full mt-8 py-6 bg-indigo-600 text-white rounded-[1.5rem] font-black text-xl shadow-xl">CONTINUE</button>
+                </div>
             </div>
         </div>
+
     </main>
 
-    <script src="data/maths.js"></script>
-    <script src="app.js"></script>
+    <script>
+        // --- DATA ENGINE ---
+        window.mathsData = {};
+        for(let i=1; i<=10; i++) {
+            window.mathsData[`class${i}`] = {
+                "Algebra": {
+                    "Variables & Expressions": { "Easy": [], "Moderate": [], "Tough": [] },
+                    "Simple Equations": { "Easy": [], "Moderate": [], "Tough": [] }
+                },
+                "Geometry": {
+                    "Shapes & Symmetry": { "Easy": [], "Moderate": [], "Tough": [] }
+                }
+            };
+            // Dynamic Generation
+            const chaps = window.mathsData[`class${i}`];
+            Object.keys(chaps).forEach(ch => {
+                Object.keys(chaps[ch]).forEach(tp => {
+                    for(let q=0; q<100; q++) {
+                        chaps[ch][tp].Easy.push({q:`${q+i} + x = ${q+i+5}. Find x.`, a:"5", opts:["2","5","3","0"]});
+                        chaps[ch][tp].Moderate.push({q:`2x + ${i} = ${20+i}. Find x.`, a:"10", opts:["5","10","15","20"]});
+                        chaps[ch][tp].Tough.push({q:`Solve for x: (x/2) + ${i} = ${10+i}`, a:"20", opts:["10","20","30","40"]});
+                    }
+                });
+            });
+        }
+
+        // --- APP LOGIC ---
+        let db = JSON.parse(localStorage.getItem('vks_v7')) || { unlocked: {}, pts: 0 };
+        let active = { class: 0, sub: '', ch: '', tp: '', lvl: '', limit: 10, qIdx: 0, score: 0, isTest: false };
+        let timerInt;
+
+        function navTo(viewId) {
+            document.querySelectorAll('main > div').forEach(d => d.classList.add('hidden'));
+            document.getElementById(viewId).classList.remove('hidden');
+        }
+
+        function goHome() { location.reload(); }
+
+        function renderClasses() {
+            const v = document.getElementById('view-classes');
+            for(let i=1; i<=10; i++) {
+                v.innerHTML += `
+                <div onclick="selectClass(${i})" class="bg-white p-10 rounded-3xl shadow-sm border border-slate-200 hover:border-indigo-600 hover:shadow-xl cursor-pointer text-center transition transform hover:-translate-y-1">
+                    <h3 class="text-4xl font-black text-slate-800">${i}</h3>
+                    <p class="text-[10px] uppercase font-bold text-slate-400 mt-2">Class</p>
+                </div>`;
+            }
+            document.getElementById('nav-pts').innerText = db.pts;
+        }
+
+        function selectClass(num) {
+            active.class = num;
+            navTo('view-subjects');
+            const subs = num >= 9 ? ["Maths", "Physics", "Chemistry", "Biology"] : ["Maths", "Science", "English"];
+            document.getElementById('view-subjects').innerHTML = subs.map(s => `
+                <div onclick="selectSub('${s}')" class="bg-white p-12 rounded-[2.5rem] shadow-lg text-center cursor-pointer border-b-8 border-indigo-200 font-black text-2xl">${s}</div>
+            `).join('');
+            updateBread('Class ' + num);
+        }
+
+        function selectSub(sub) {
+            active.sub = sub;
+            navTo('view-chapters');
+            const classKey = `class${active.class}`;
+            const lib = (sub === 'Maths') ? window.mathsData : {};
+            const chapters = Object.keys(lib[classKey] || {});
+            
+            document.getElementById('view-chapters').innerHTML = chapters.map(ch => `
+                <div onclick="selectChapter('${ch}')" class="bg-white p-8 rounded-2xl shadow border-l-8 border-indigo-600 font-bold cursor-pointer hover:bg-indigo-50">${ch}</div>
+            `).join('') || "<p class='p-10 text-center col-span-full'>Data coming soon for this subject.</p>";
+            updateBread(`Class ${active.class} > ${sub}`);
+        }
+
+        function selectChapter(ch) {
+            active.ch = ch;
+            navTo('view-topics');
+            const classKey = `class${active.class}`;
+            const lib = (active.sub === 'Maths') ? window.mathsData : {};
+            const topics = Object.keys(lib[classKey][ch] || {});
+            
+            document.getElementById('view-topics').innerHTML = topics.map(t => `
+                <div onclick="selectTopic('${t}')" class="bg-white p-8 rounded-2xl shadow border-l-8 border-emerald-500 font-bold cursor-pointer hover:bg-emerald-50">${t}</div>
+            `).join('');
+        }
+
+        function selectTopic(t) {
+            active.tp = t;
+            navTo('view-levels');
+            const lvls = ["Easy", "Moderate", "Tough"];
+            document.getElementById('view-levels').innerHTML = lvls.map(l => {
+                const key = `${active.class}_${active.sub}_${active.ch}_${active.tp}_${l}`;
+                const isLocked = l !== "Easy" && !db.unlocked[key];
+                return `
+                <div onclick="${isLocked ? `promptUnlock('${l}')` : `openConfig('${l}')`}" 
+                     class="bg-white p-10 rounded-[2.5rem] shadow border-2 ${isLocked ? 'opacity-50 border-slate-200' : 'border-indigo-100 hover:border-indigo-600 cursor-pointer'} text-center transition">
+                    <h4 class="text-2xl font-black">${l}</h4>
+                    <p class="text-[10px] mt-2 font-black ${isLocked ? 'text-rose-500' : 'text-emerald-500'}">${isLocked ? 'LOCKED' : 'OPEN'}</p>
+                </div>`;
+            }).join('');
+        }
+
+        function openConfig(l) {
+            active.lvl = l; active.isTest = false;
+            document.getElementById('config-modal').classList.remove('hidden');
+        }
+
+        function promptUnlock(l) {
+            if(confirm(`Pass a 10-Question Skip Test (70%+) to unlock ${l}?`)) {
+                active.lvl = l; active.isTest = true; active.limit = 10;
+                startSession();
+            }
+        }
+
+        function startSession() {
+            if(!active.isTest) active.limit = document.getElementById('q-range').value;
+            document.getElementById('config-modal').classList.add('hidden');
+            navTo('portal');
+            active.qIdx = 0; active.score = 0;
+            if(active.isTest) {
+                document.getElementById('timer').classList.remove('hidden');
+                let sec = 120;
+                timerInt = setInterval(() => {
+                    let m = Math.floor(sec/60); let s = sec%60;
+                    document.getElementById('timer').innerText = `${m}:${s<10?'0':''}${s}`;
+                    if(sec <= 0) { clearInterval(timerInt); endSession(); }
+                    sec--;
+                }, 1000);
+            }
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const classKey = `class${active.class}`;
+            const pool = window.mathsData[classKey][active.ch][active.tp][active.lvl];
+            active.currentQ = pool[Math.floor(Math.random() * pool.length)];
+            
+            document.getElementById('p-label').innerText = active.tp;
+            document.getElementById('p-title').innerText = `Question ${active.qIdx + 1}/${active.limit}`;
+            document.getElementById('q-box').innerText = active.currentQ.q;
+            document.getElementById('feedback').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+
+            const grid = document.getElementById('opts-grid');
+            grid.innerHTML = '';
+            active.currentQ.opts.forEach(o => {
+                const b = document.createElement('button');
+                b.className = "p-5 bg-white border-2 border-slate-100 rounded-2xl font-bold hover:border-indigo-600 transition shadow-sm active:scale-95";
+                b.innerText = o;
+                b.onclick = () => check(o, b);
+                grid.appendChild(b);
+            });
+        }
+
+        function check(val, btn) {
+            const fb = document.getElementById('feedback');
+            fb.classList.remove('hidden', 'bg-emerald-100', 'bg-rose-100', 'animate__bounceIn', 'animate__shakeX');
+            if(val == active.currentQ.a) {
+                fb.innerText = "⭐ BRILLIANT!"; fb.classList.add('bg-emerald-100', 'text-emerald-700', 'animate__bounceIn');
+                active.score++; db.pts += 10;
+                document.querySelectorAll('#opts-grid button').forEach(b => b.disabled = true);
+                document.getElementById('next-btn').classList.remove('hidden');
+            } else {
+                fb.innerText = "WRONG! TRY AGAIN"; fb.classList.add('bg-rose-100', 'text-rose-700', 'animate__shakeX');
+                db.pts = Math.max(0, db.pts - 5);
+            }
+            save(); updateUI();
+        }
+
+        function nextQuestion() {
+            active.qIdx++;
+            if(active.qIdx < active.limit) loadQuestion();
+            else endSession();
+        }
+
+        function endSession() {
+            clearInterval(timerInt);
+            if(active.isTest && active.score >= 7) {
+                const key = `${active.class}_${active.sub}_${active.ch}_${active.tp}_${active.lvl}`;
+                db.unlocked[key] = true;
+                alert(`UNLOCKED! Score: ${active.score}/10`);
+            } else if(active.isTest) {
+                alert(`FAILED! Score: ${active.score}/10. Need 7.`);
+            } else {
+                alert(`Practice Complete! Score: ${active.score}/${active.limit}`);
+            }
+            save(); goHome();
+        }
+
+        // --- UTILS ---
+        function toggleMenu() { document.getElementById('side-menu').classList.toggle('open'); }
+        function save() { localStorage.setItem('vks_v7', JSON.stringify(db)); }
+        function updateUI() { document.getElementById('nav-pts').innerText = db.pts; }
+        function updateBread(txt) { document.getElementById('breadcrumbs').innerText = txt; }
+        document.getElementById('q-range').oninput = function() { document.getElementById('q-val').innerText = this.value; };
+
+        renderClasses();
+    </script>
 </body>
 </html>
