@@ -1,3 +1,20 @@
+let navStack = []; // This stores the history of your clicks
+
+function init() {
+    const v = document.getElementById('view-classes');
+    v.innerHTML = "";
+    for(let i=1; i<=10; i++) {
+        v.innerHTML += `
+            <div onclick="selectClass(${i})" class="p-10 bg-white shadow-xl rounded-[2.5rem] text-center font-black text-3xl cursor-pointer hover:bg-indigo-600 hover:text-white transition-all border border-slate-100">
+                ${i}
+                <p class="text-[10px] text-slate-400 uppercase mt-2">Grade</p>
+            </div>`;
+    }
+    updateDashboard();
+}
+
+
+
 // PERSISTENT DATABASE
 let db = JSON.parse(localStorage.getItem('vks_lms_data')) || {
     pts: 0,
@@ -233,25 +250,74 @@ function init() {
 
 // Standard Dynamic Loading Logic
 function showView(id, isBacking = false) {
-    const current = Array.from(document.querySelectorAll('main > div')).find(d => !d.classList.contains('hidden') && d.id !== 'breadcrumb');
-    if(!isBacking && current && current.id !== id) navStack.push(current.id);
+    // 1. Identify what the user is looking at RIGHT NOW
+    const currentView = Array.from(document.querySelectorAll('main > div')).find(d => 
+        !d.classList.contains('hidden') && d.id !== 'breadcrumb'
+    );
+
+    // 2. If they are moving FORWARD, save the current screen to the history stack
+    if (!isBacking && currentView && currentView.id !== id) {
+        navStack.push(currentView.id);
+    }
+
+    // 3. Hide all screens
+    document.querySelectorAll('main > div').forEach(d => {
+        if (d.id !== 'breadcrumb') d.classList.add('hidden');
+    });
     
-    document.querySelectorAll('main > div').forEach(d => { if(d.id !== 'breadcrumb') d.classList.add('hidden'); });
-    document.getElementById(id).classList.remove('hidden');
-    document.getElementById('back-btn').classList.toggle('hidden', id === 'view-classes');
+    // 4. Show the new screen
+    const target = document.getElementById(id);
+    if (target) target.classList.remove('hidden');
+
+    // 5. Toggle the Global Back Button (Visible everywhere except the Home/Classes screen)
+    const backBtn = document.getElementById('global-back-btn');
+    if (id === 'view-classes') {
+        backBtn.classList.add('hidden');
+        navStack = []; // Reset history when user goes all the way home
+    } else {
+        backBtn.classList.remove('hidden');
+    }
+
+    // 6. Update the Breadcrumb text
+    updateBreadcrumb(id);
 }
 
 function goBack() {
-    if(navStack.length > 0) showView(navStack.pop(), true);
+    // If we are at the beginning, just go to classes
+    if (navStack.length === 0) {
+        showView('view-classes');
+        return;
+    }
+
+    // SAFETY CHECK: If the user is in the middle of a Quiz (Portal)
+    const portal = document.getElementById('portal');
+    if (!portal.classList.contains('hidden')) {
+        if (!confirm("Quit Quiz? Your points for this session will not be saved.")) {
+            return; // User chose to stay in the quiz
+        }
+    }
+
+    // Pull the last screen from our history and show it
+    const previousViewId = navStack.pop();
+    showView(previousViewId, true); // true tells showView NOT to add this move to history
 }
+
 
 // (Included standard syllabus navigation functions selectClass, selectSub, loadFile, renderTopics, selectTopic, startPractice, loadQuestion)
 
 function selectClass(n) { active.class = n; showView('view-subjects'); document.getElementById('view-subjects').innerHTML = ["Maths", "Science", "English"].map(s => `<div onclick="selectSub('${s}')" class="p-12 bg-white rounded-[3rem] shadow-sm border font-black text-2xl text-center uppercase cursor-pointer hover:shadow-xl transition-all">${s}</div>`).join(''); }
 function selectSub(s) { active.sub = s; showView('view-chapters'); const chs = syllabus[`class${active.class}`] || {}; document.getElementById('view-chapters').innerHTML = Object.keys(chs).map(c => `<div onclick="loadFile('${c}', '${chs[c]}')" class="p-6 bg-white rounded-2xl border shadow-sm font-bold cursor-pointer hover:border-indigo-600 transition">${c}</div>`).join(''); }
+
 function loadFile(t, f) { active.ch = t; const path = `data/${active.sub.toLowerCase()}/class${active.class}/${f}`; const old = document.getElementById('data-script'); if(old) old.remove(); const s = document.createElement('script'); s.id = 'data-script'; s.src = path; s.onload = renderTopics; document.head.appendChild(s); }
+
+
 function renderTopics() { showView('view-topics'); const ts = Object.keys(window.currentChapterData); document.getElementById('view-topics').innerHTML = ts.map(t => `<div onclick="selectTopic('${t}')" class="p-6 bg-white rounded-2xl border border-emerald-100 shadow-sm font-bold cursor-pointer hover:bg-emerald-50">${t}</div>`).join(''); }
+
+
+
 function selectTopic(t) { active.tp = t; showView('view-levels'); document.getElementById('view-levels').innerHTML = ["Easy", "Moderate", "Tough"].map(l => `<div onclick="startPractice('${l}')" class="p-10 bg-white border-2 border-indigo-500 rounded-3xl text-center font-black cursor-pointer hover:bg-indigo-600 hover:text-white transition">${l}</div>`).join(''); }
+
+
 function startPractice(l) { active.lvl = l; active.pool = window.currentChapterData[active.tp][l]; active.qIdx = 0; active.score = 0; showView('portal'); loadQuestion(); }
 
 function loadQuestion() {
@@ -270,5 +336,34 @@ function loadQuestion() {
 }
 
 function resetData() { if(confirm("This will erase all your points and history. Continue?")) { localStorage.removeItem('vks_lms_data'); location.reload(); } }
+
+function updateBreadcrumb(id) {
+    const b = document.getElementById('breadcrumb');
+    if (!b) return; // Safety check in case the element is missing
+
+    switch(id) {
+        case 'view-classes': 
+            b.innerText = "Home / Select Class"; 
+            break;
+        case 'view-subjects': 
+            b.innerText = `Class ${active.class} / Select Subject`; 
+            break;
+        case 'view-chapters': 
+            b.innerText = `Class ${active.class} > ${active.sub}`; 
+            break;
+        case 'view-topics': 
+            b.innerText = `${active.ch} / Topics`; 
+            break;
+        case 'view-levels': 
+            b.innerText = `${active.ch} > ${active.tp} / Select Level`; 
+            break;
+        case 'portal': 
+            b.innerText = `Currently Practicing: ${active.tp} (${active.lvl})`; 
+            break;
+        default: 
+            b.innerText = "LMS Portal";
+    }
+}
+
 
 init();
