@@ -3,110 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>teachingvks. | Pro LMS</title>
+    <title>teachingvks. | LMS Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body class="bg-slate-50 text-slate-900 overflow-x-hidden">
 
     <nav class="bg-slate-900 text-white p-4 sticky top-0 z-50 flex justify-between items-center px-6 shadow-2xl">
-    <div class="flex items-center gap-4">
-        <button onclick="toggleMenu()" class="p-2 hover:bg-slate-800 rounded-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-            </svg>
-        </button>
-        <h1 onclick="location.reload()" class="text-xl font-black cursor-pointer tracking-tighter uppercase">teachingvks.</h1>
-    </div>
-
-    <div class="flex items-center gap-4">
-        <button id="global-back-btn" onclick="goBack()" class="hidden px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg border border-indigo-400/30">
-            &larr; Previous
-        </button>
-        
-        <div class="h-6 w-[1px] bg-slate-700 mx-2"></div>
-        <div class="text-emerald-400 font-black text-sm uppercase">pts: <span id="nav-pts">0</span></div>
-    </div>
-</nav>
-
-<main class="max-w-6xl mx-auto p-6">
-    <div id="breadcrumb" class="mb-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Home</div>
-    
-    </main>
-
-    <div id="side-menu" class="fixed inset-y-0 left-0 w-80 bg-white shadow-2xl z-[60] transform -translate-x-full transition-transform duration-500 ease-in-out p-8">
-        <div class="flex justify-between items-center mb-10">
-            <h2 class="font-black text-2xl text-slate-800">Student Profile</h2>
-            <button onclick="toggleMenu()" class="text-slate-300 hover:text-rose-500 font-bold">CLOSE</button>
+        <div class="flex items-center gap-4">
+            <button onclick="toggleMenu()" class="p-2 hover:bg-slate-800 rounded-xl bg-slate-800/50 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+            <h1 onclick="location.reload()" class="text-xl font-black cursor-pointer tracking-tighter uppercase">teachingvks.</h1>
         </div>
 
-        <div class="space-y-4">
-            <div class="p-4 bg-indigo-600 rounded-2xl text-white">
-                <p class="text-xs opacity-70">Accuracy Rate</p>
-                <h3 id="acc-rate" class="text-3xl font-black">0%</h3>
+        <div class="flex items-center gap-3">
+            <button id="global-back-btn" onclick="goBack()" class="hidden px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg border border-indigo-400/30">
+                &larr; Previous
+            </button>
+            <div class="h-6 w-[1px] bg-slate-700 mx-1"></div>
+            <div class="text-emerald-400 font-black text-sm uppercase">pts: <span id="nav-pts">0</span></div>
+        </div>
+    </nav>
+
+    <div id="side-menu" class="fixed inset-y-0 left-0 w-80 bg-white shadow-2xl z-[60] transform -translate-x-full p-8 overflow-y-auto">
+        <div class="flex justify-between items-center mb-8">
+            <h2 class="font-black text-2xl text-indigo-600 italic">Dashboard</h2>
+            <button onclick="toggleMenu()" class="text-slate-400 hover:text-rose-500 font-bold text-2xl">&times;</button>
+        </div>
+
+        <div class="space-y-6">
+            <div class="bg-indigo-600 p-6 rounded-3xl text-white shadow-lg shadow-indigo-200">
+                <p class="text-[10px] font-bold opacity-80 uppercase tracking-widest">Total Points</p>
+                <h3 id="menu-pts" class="text-4xl font-black">0</h3>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-                <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
-                    <p class="text-[10px] text-emerald-600 font-bold uppercase">Right</p>
-                    <p id="stats-right" class="text-2xl font-black text-emerald-700">0</p>
+                <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-100">
+                    <p class="text-[10px] font-bold text-emerald-600 uppercase text-center">Right</p>
+                    <p id="stats-right" class="text-2xl font-black text-emerald-700 text-center">0</p>
                 </div>
-                <div class="p-4 bg-rose-50 rounded-2xl border border-rose-100">
-                    <p class="text-[10px] text-rose-600 font-bold uppercase">Wrong</p>
-                    <p id="stats-wrong" class="text-2xl font-black text-rose-700">0</p>
+                <div class="bg-rose-50 p-4 rounded-2xl border border-rose-100">
+                    <p class="text-[10px] font-bold text-rose-600 uppercase text-center">Wrong</p>
+                    <p id="stats-wrong" class="text-2xl font-black text-rose-700 text-center">0</p>
                 </div>
             </div>
 
-            <div class="mt-8">
-                <h4 class="text-xs font-black text-slate-400 uppercase mb-4 tracking-widest">Completion Log</h4>
-                <div id="progress-log" class="space-y-3 max-h-60 overflow-y-auto pr-2">
-                    </div>
+            <div>
+                <h4 class="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">Progress Log</h4>
+                <div id="progress-list" class="space-y-3"></div>
             </div>
-            
-            <button onclick="resetData()" class="w-full mt-10 py-3 text-xs font-bold text-rose-400 hover:text-rose-600 border border-dashed border-rose-200 rounded-xl">RESET ALL DATA</button>
+
+            <button onclick="resetData()" class="w-full mt-8 py-3 text-xs font-bold text-rose-400 hover:text-rose-600 border border-dashed border-rose-200 rounded-xl">RESET DATA</button>
         </div>
     </div>
 
     <main class="max-w-6xl mx-auto p-6">
-        <div class="flex items-center gap-4 mb-8">
-            <button id="back-btn" onclick="goBack()" class="hidden px-5 py-2 bg-white border rounded-xl font-bold text-xs shadow-sm hover:shadow-md transition-all">&larr; BACK</button>
-            <div id="breadcrumb" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Home</div>
-        </div>
+        <div id="breadcrumb" class="mb-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Home / Select Class</div>
 
         <div id="view-classes" class="grid grid-cols-2 md:grid-cols-5 gap-6"></div>
         <div id="view-subjects" class="hidden grid grid-cols-1 md:grid-cols-3 gap-8"></div>
-        <div id="view-chapters" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        <div id="view-chapters" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
         <div id="view-topics" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         <div id="view-levels" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6"></div>
 
         <div id="portal" class="hidden max-w-2xl mx-auto">
-    <div class="bg-white rounded-[3rem] shadow-2xl border p-8 text-center relative overflow-hidden">
-        
-        <div class="flex justify-between items-center mb-6 px-2">
-            <div id="p-label" class="text-[10px] font-black text-indigo-500 uppercase tracking-widest"></div>
-            
-            <button onclick="goBack()" class="px-3 py-1 bg-rose-50 text-rose-600 rounded-lg text-[10px] font-black uppercase hover:bg-rose-600 hover:text-white transition-all">
-                Quit Quiz &times;
-            </button>
-        </div>
-
-        <div class="w-full h-1 bg-slate-100 absolute top-0 left-0">
-            <div id="progress-bar" class="h-full bg-indigo-600 transition-all duration-500" style="width: 0%"></div>
-        </div>
-
-        <div id="q-box" class="text-2xl font-bold mb-8 bg-slate-900 text-indigo-100 p-10 rounded-3xl min-h-[180px] flex items-center justify-center"></div>
-        <div id="opts-grid" class="grid grid-cols-1 gap-3"></div>
-        <div id="feedback" class="mt-6 p-4 rounded-xl hidden font-bold"></div>
-        
-        <button id="next-btn" onclick="handleNext()" class="hidden w-full mt-6 py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-lg">CONTINUE &rarr;</button>
-    </div>
-</div>
-
-
-                <div id="q-box" class="text-2xl md:text-3xl font-bold mb-10 text-slate-800 leading-relaxed min-h-[150px] flex items-center justify-center"></div>
-                <div id="opts-grid" class="grid grid-cols-1 gap-4"></div>
-                <div id="feedback" class="mt-8 p-4 rounded-2xl hidden font-black animate-pulse"></div>
-                <button id="next-btn" onclick="handleNext()" class="hidden w-full mt-8 py-5 bg-slate-900 text-white rounded-3xl font-black tracking-widest hover:bg-indigo-600 transition-colors">CONTINUE &rarr;</button>
+            <div class="bg-white rounded-[3rem] shadow-2xl border p-8 text-center relative overflow-hidden">
+                <div class="w-full h-1.5 bg-slate-100 absolute top-0 left-0">
+                    <div id="progress-bar" class="h-full bg-indigo-600 transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between items-center mb-6 mt-4">
+                    <div id="p-label" class="text-[10px] font-black text-indigo-500 uppercase"></div>
+                    <button onclick="goBack()" class="px-3 py-1 bg-rose-50 text-rose-600 rounded-lg text-[10px] font-black uppercase">Quit &times;</button>
+                </div>
+                <div id="q-box" class="text-2xl font-bold mb-8 bg-slate-900 text-indigo-100 p-10 rounded-3xl min-h-[180px] flex items-center justify-center"></div>
+                <div id="opts-grid" class="grid grid-cols-1 gap-3"></div>
+                <div id="feedback" class="mt-6 p-4 rounded-xl hidden font-black"></div>
+                <button id="next-btn" onclick="handleNext()" class="hidden w-full mt-6 py-5 bg-indigo-600 text-white rounded-2xl font-black shadow-lg">CONTINUE &rarr;</button>
             </div>
         </div>
     </main>
