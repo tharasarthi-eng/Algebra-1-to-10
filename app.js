@@ -1,3 +1,62 @@
+// Add this at the top of your app.js
+let navStack = []; 
+
+function showView(id, isBacking = false) {
+    const currentView = Array.from(document.querySelectorAll('main > div')).find(d => 
+        !d.classList.contains('hidden') && 
+        !['breadcrumb', 'back-btn'].includes(d.id)
+    );
+
+    // If moving forward to a new view, save the current one to the stack
+    if (!isBacking && currentView && currentView.id !== id) {
+        navStack.push(currentView.id);
+    }
+
+    // Standard View Switching Logic
+    document.querySelectorAll('main > div').forEach(d => {
+        if (!['breadcrumb', 'back-btn'].includes(d.id)) d.classList.add('hidden');
+    });
+    
+    document.getElementById(id).classList.remove('hidden');
+
+    // Toggle Back Button: Hide only on the very first screen (view-classes)
+    const backBtn = document.getElementById('back-btn');
+    if (id === 'view-classes') {
+        backBtn.classList.add('hidden');
+        navStack = []; // Clear stack when returning home
+    } else {
+        backBtn.classList.remove('hidden');
+    }
+}
+
+function goBack() {
+    if (navStack.length === 0) {
+        showView('view-classes');
+        return;
+    }
+
+    // If backing out of the Portal, confirm first
+    const portal = document.getElementById('portal');
+    if (!portal.classList.contains('hidden')) {
+        if (!confirm("Exit practice session? Your score will not be saved.")) return;
+    }
+
+    const previousViewId = navStack.pop();
+    showView(previousViewId, true);
+    
+    // Auto-update breadcrumb based on where we landed
+    updateBreadNav(previousViewId);
+}
+
+function updateBreadNav(viewId) {
+    const b = document.getElementById('breadcrumb');
+    if (viewId === 'view-classes') b.innerText = "Home";
+    else if (viewId === 'view-subjects') b.innerText = `Class ${active.class}`;
+    else if (viewId === 'view-chapters') b.innerText = `${active.sub}`;
+    else if (viewId === 'view-topics') b.innerText = `${active.ch}`;
+    else if (viewId === 'view-levels') b.innerText = `${active.tp}`;
+}
+
 let db = JSON.parse(localStorage.getItem('vks_data')) || { pts: 0 };
 let active = { class: 0, sub: '', ch: '', tp: '', lvl: '', qIdx: 0, score: 0, pool: [] };
 
