@@ -112,40 +112,6 @@ window.currentChapterData = {
             { q: "Show that the sum of an AP whose first term is a, second b and last c is [(a+c)(b+c-2a)] / [2(b-a)].", a: "True", opts: ["True", "False", "Only if a=0", "None"] },
             { q: "Find sum of all integers between 100 and 1000 divisible by 9.", a: "55350", opts: ["55350", "50000", "60000", "None"] }
         ]
-    },
-    "Arithmetic Mean & Properties": {
-        "Easy": [
-            { q: "The Arithmetic Mean (AM) between two numbers a and b is ____.", a: "(a+b)/2", opts: ["ab", "(a+b)/2", "√(ab)", "a-b"] },
-            { q: "Find the AM between 10 and 20.", a: "15", opts: ["10", "15", "20", "30"] },
-            { q: "If a, b, c are in AP, then b is the ____ of a and c.", a: "Arithmetic Mean", opts: ["Geometric Mean", "Arithmetic Mean", "Product", "Difference"] },
-            { q: "Find x if 2, x, 10 are in AP.", a: "6", opts: ["4", "5", "6", "8"] },
-            { q: "The AM of first n natural numbers is ____.", a: "(n+1)/2", opts: ["n/2", "n", "(n+1)/2", "None"] },
-            { q: "If AM between x and 5 is 10, find x.", a: "15", opts: ["5", "10", "15", "20"] },
-            { q: "The sum of n arithmetic means between a and b is ____.", a: "n * AM", opts: ["AM", "n * AM", "2 * AM", "None"] },
-            { q: "If 4, a, b, 16 are in AP, find a+b.", a: "20", opts: ["10", "20", "12", "None"] },
-            { q: "Can we insert any number of arithmetic means between two numbers?", a: "Yes", opts: ["Yes", "No", "Only one", "None"] },
-            { q: "AM of -5 and 5 is ____.", a: "0", opts: ["0", "5", "-5", "1"] }
-        ],
-        "Moderate": [
-            { q: "Insert three arithmetic means between 3 and 19.", a: "7, 11, 15", opts: ["7, 11, 15", "6, 10, 14", "8, 12, 16", "None"] },
-            { q: "If the AM between a and b is 10, and a=4, find b.", a: "16", opts: ["10", "14", "16", "20"] },
-            { q: "The sum of 5 AMs between 2 and 14 is ____.", a: "40", opts: ["16", "32", "40", "80"] },
-            { q: "If (a^n + b^n) / (a^{n-1} + b^{n-1}) is the AM between a and b, find n.", a: "1", opts: ["0", "1", "2", "-1"] },
-            { q: "Between 1 and 31, m means are inserted so that ratio of 7th and (m-1)th mean is 5:9. Find m.", a: "14", opts: ["12", "14", "16", "20"] },
-            { q: "If one AM 'A' is inserted between a and b, then (A-a)² + (A-b)² is ____.", a: "1/2 (a-b)²", opts: ["(a-b)²", "1/2 (a-b)²", "0", "None"] },
-            { q: "If a, b, c are in AP, find value of (a-c)² / (b²-ac).", a: "4", opts: ["1", "2", "4", "None"] },
-            { q: "The sum of n AMs between 20 and 80 is 500. Find n.", a: "10", opts: ["5", "10", "15", "20"] },
-            { q: "If x, y, z are in AP, then (x+2y-z)(2y+z-x)(z+x-y) is ____.", a: "4xyz", opts: ["xyz", "2xyz", "4xyz", "None"] },
-            { q: "AM of first 100 natural numbers.", a: "50.5", opts: ["50", "50.5", "51", "None"] }
-        ],
-        "Tough": [
-            { q: "If n AMs are inserted between a and 2b, and a and b, find ratio of first means.", a: "Complex", opts: ["1:1", "2:1", "Depends on n", "None"] },
-            { q: "Sum of n AMs between 1 and 50 is 153. Find n.", a: "6", opts: ["5", "6", "7", "8"] },
-            { q: "If a, b, c are in AP, find value of a³+c³-8b³.", a: "-6abc", opts: ["0", "abc", "-6abc", "None"] },
-            { q: "Find the sum of all arithmetic means inserted between a and b.", a: "n(a+b)/2", opts: ["(a+b)/2", "n(a+b)/2", "n(a+b)", "None"] },
-            { q: "If p AMs are inserted between 5 and 41 so that ratio of a_3 to a_{p-1} is 2:5, find p.", a: "11", opts: ["10", "11", "12", "13"] },
-            { q: "If AM of a and b is double their Geometric Mean, find ratio a:b.", a: "7 ± 4√3", opts: ["2:1", "4:1", "7 ± 4√3", "None"] },
-            { q: "If a², b², c² are in AP, then 1/(b+c), 1/(c+a), 1/(a+b) are in ____.", a: "AP", opts: ["AP", "GP", "HP", "None"] },
-            { q: "If the AM of two numbers is 5 and GM is 4, find the quadratic equation whose roots are these numbers.", a: "x² - 10x + 16 = 0", opts: ["x² - 5x + 4 = 0", "x² - 10x + 16 = 0", "x² - 10x + 8 = 0", "None"] },
-            { q: "If a_1, a_2... a_n are in AP, then 1/(a_1a_2) + 1/(a_2
+    }
+};
 
