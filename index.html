@@ -3,46 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>teachingvks. | Master Portal</title>
+    <title>teachingvks. | Universal Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
-        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; }
         .math-display { font-family: 'JetBrains Mono', monospace; }
-        .sidebar { transition: transform 0.4s ease; transform: translateX(100%); z-index: 1000; }
+        .sidebar { transition: transform 0.3s ease-in-out; transform: translateX(100%); z-index: 1000; }
         .sidebar.open { transform: translateX(0); }
+        .locked-level { filter: grayscale(1); opacity: 0.6; }
     </style>
 </head>
-<body>
+<body class="overflow-x-hidden">
 
-    <nav class="gradient-bg text-white p-4 sticky top-0 z-50 shadow-2xl flex justify-between items-center px-8">
+    <nav class="bg-slate-900 text-white p-4 sticky top-0 z-50 flex justify-between items-center px-8 shadow-2xl">
         <h1 onclick="location.reload()" class="text-2xl font-black cursor-pointer tracking-tighter">teachingvks<span class="text-indigo-500">.</span></h1>
         <div class="flex items-center gap-6">
-            <div class="hidden md:block text-right">
-                <p class="text-[9px] uppercase text-slate-400 font-bold">Practice Credits</p>
-                <p id="nav-pts" class="text-emerald-400 font-black">0</p>
-            </div>
-            <button onclick="toggleMenu()" class="p-2 bg-indigo-600 rounded-xl font-bold">MENU</button>
+            <div class="text-right"><p class="text-[9px] font-bold text-slate-400 uppercase">Total Credits</p><p id="nav-pts" class="text-emerald-400 font-black">0</p></div>
+            <button onclick="toggleMenu()" class="bg-indigo-600 px-5 py-2 rounded-xl font-bold text-xs uppercase tracking-widest">Menu</button>
         </div>
     </nav>
 
     <div id="side-menu" class="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl sidebar p-8">
-        <div class="flex justify-between items-center mb-10">
-            <h2 class="text-2xl font-black">Settings</h2>
-            <button onclick="toggleMenu()" class="text-3xl">&times;</button>
-        </div>
+        <div class="flex justify-between items-center mb-10"><h2 class="text-2xl font-black">Menu</h2><button onclick="toggleMenu()" class="text-3xl">&times;</button></div>
         <ul class="space-y-4 font-bold">
-            <li onclick="alert('Performance Report: Tracking your mastery...')" class="p-4 bg-slate-50 rounded-2xl cursor-pointer hover:bg-indigo-50 transition">📊 Performance Report</li>
-            <li onclick="showToppers()" class="p-4 bg-slate-50 rounded-2xl cursor-pointer hover:bg-amber-50 transition">🏆 Toppers Section</li>
-            <li class="p-4 bg-slate-50 rounded-2xl text-slate-300">🚀 Career Mapping</li>
+            <li class="p-4 bg-slate-50 rounded-2xl cursor-pointer hover:bg-indigo-50">📊 Performance Report</li>
+            <li class="p-4 bg-slate-50 rounded-2xl cursor-pointer hover:bg-amber-50">🏆 Toppers Section</li>
+            <li class="p-4 bg-slate-100 text-slate-400 rounded-2xl">🚀 Career Mapping</li>
             <li class="p-4 bg-slate-50 rounded-2xl cursor-pointer">📧 Query Box</li>
         </ul>
     </div>
 
     <main class="max-w-6xl mx-auto p-6">
-        <div id="breadcrumb" class="mb-6 text-xs font-bold text-slate-400 uppercase tracking-widest">Home</div>
+        <div id="breadcrumb" class="mb-6 text-xs font-black text-slate-400 uppercase tracking-widest">Home</div>
 
         <div id="view-classes" class="grid grid-cols-2 md:grid-cols-5 gap-4"></div>
         <div id="view-subjects" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6"></div>
@@ -50,34 +44,32 @@
         <div id="view-topics" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         <div id="view-levels" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6"></div>
 
-        <div id="config-modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-[100]">
-            <div class="bg-white p-10 rounded-[2.5rem] max-w-sm w-full">
-                <h3 class="text-2xl font-black mb-2 text-center">Practice Setup</h3>
-                <p class="text-center text-slate-500 text-xs mb-8 uppercase font-bold">Select Question Limit</p>
-                <input type="range" id="q-range" min="5" max="100" step="5" value="10" class="w-full mb-4">
+        <div id="config-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+            <div class="bg-white p-10 rounded-[2.5rem] max-w-sm w-full shadow-2xl">
+                <h3 class="text-xl font-black mb-6 text-center">Session Config</h3>
+                <input type="range" id="q-range" min="5" max="100" step="5" value="10" class="w-full mb-4 accent-indigo-600">
                 <div id="q-val" class="text-center text-4xl font-black text-indigo-600 mb-8">10</div>
-                <button onclick="startSession()" class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black shadow-lg">START SESSION</button>
+                <button onclick="startSession()" class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black shadow-lg">START</button>
             </div>
         </div>
 
         <div id="portal" class="hidden max-w-2xl mx-auto animate__animated animate__zoomIn">
-            <div id="portal-card" class="bg-white rounded-[3rem] shadow-2xl border overflow-hidden">
+            <div class="bg-white rounded-[3rem] shadow-2xl border overflow-hidden">
                 <div class="p-8 bg-slate-50 border-b flex justify-between items-center">
-                    <span id="p-label" class="text-xs font-black text-indigo-500 uppercase"></span>
+                    <span id="p-label" class="text-[10px] font-black text-indigo-500 uppercase"></span>
                     <div id="timer" class="text-rose-500 font-mono text-2xl hidden">02:00</div>
                 </div>
                 <div class="p-10 text-center">
                     <div id="q-box" class="math-display text-3xl font-bold py-14 bg-slate-900 text-indigo-300 rounded-[2rem] mb-8 px-6"></div>
                     <div id="opts-grid" class="grid grid-cols-1 gap-3"></div>
                     <div id="feedback" class="mt-6 p-4 rounded-xl hidden font-bold animate__animated"></div>
-                    <button id="next-btn" onclick="handleNext()" class="hidden w-full mt-6 py-5 bg-indigo-600 text-white rounded-2xl font-black">CONTINUE &rarr;</button>
+                    <button id="next-btn" onclick="handleNext()" class="hidden w-full mt-6 py-5 bg-indigo-600 text-white rounded-2xl font-black">CONTINUE</button>
                 </div>
             </div>
         </div>
     </main>
 
     <script src="data/maths.js"></script>
-    <script src="data/science.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
