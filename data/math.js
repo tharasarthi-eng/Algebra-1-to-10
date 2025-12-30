@@ -1,54 +1,39 @@
 // data/maths.js
 window.mathsData = {};
 
-// 1. Create structure for all 10 classes
+// Create Class 1 to 10
 for (let i = 1; i <= 10; i++) {
-    window.mathsData[`class${i}`] = {};
-}
-
-// 2. Logic to populate Algebra for all classes
-function populateAlgebra() {
-    for (let c = 1; c <= 10; c++) {
-        const classKey = `class${c}`;
-        
-        // Defining Chapter based on class
-        let chapterName = "Algebra Basics";
-        if (c >= 7) chapterName = "Linear Equations";
-        if (c >= 9) chapterName = "Polynomials & Quadratics";
-
-        window.mathsData[classKey][chapterName] = {
-            "Introduction": { "Easy": [], "Moderate": [], "Tough": [] },
-            "Problem Solving": { "Easy": [], "Moderate": [], "Tough": [] }
-        };
-
-        const topic = window.mathsData[classKey][chapterName]["Introduction"];
-
-        // Generate 100 variations per level
-        for (let i = 0; i < 100; i++) {
-            // Level 1: Addition/Basic Variable
-            let n1 = Math.floor(Math.random() * 10) + c;
-            let n2 = Math.floor(Math.random() * 10);
-            topic.Easy.push({
-                q: `${n1} + x = ${n1 + n2}. Find x.`,
-                a: n2.toString(),
-                opts: shuffle([n2, n2 + 1, n2 - 1, n2 + 5])
-            });
-
-            // Level 3: Harder Equations
-            let coeff = Math.floor(Math.random() * 5) + 2;
-            let ans = Math.floor(Math.random() * 10) + 1;
-            let constVal = Math.floor(Math.random() * 20);
-            let result = (coeff * ans) + constVal;
-            topic.Tough.push({
-                q: `Solve for x: ${coeff}x + ${constVal} = ${result}`,
-                a: ans.toString(),
-                opts: shuffle([ans, ans + 2, ans * 2, ans + 1])
-            });
+    const cKey = `class${i}`;
+    window.mathsData[cKey] = {
+        "Algebra": {
+            "Variables & Expressions": {
+                "Easy": [], "Moderate": [], "Tough": []
+            },
+            "Equations": {
+                "Easy": [], "Moderate": [], "Tough": []
+            }
+        },
+        "Geometry": {
+            "Shapes & Angles": {
+                "Easy": [], "Moderate": [], "Tough": []
+            }
         }
-    }
+    };
+
+    // Auto-generate 100 questions for each
+    const chaps = Object.keys(window.mathsData[cKey]);
+    chaps.forEach(ch => {
+        const topics = Object.keys(window.mathsData[cKey][ch]);
+        topics.forEach(tp => {
+            const levels = window.mathsData[cKey][ch][tp];
+            for (let q = 0; q < 100; q++) {
+                // Easy
+                levels.Easy.push({ q: `${q+i} + x = ${q+i+2}. Find x.`, a: "2", opts: ["1", "2", "3", "0"] });
+                // Moderate
+                levels.Moderate.push({ q: `2x + ${i} = ${20+i}. Find x.`, a: "10", opts: ["5", "10", "15", "20"] });
+                // Tough
+                levels.Tough.push({ q: `Solve for x: (x/2) + ${i} = ${10+i}`, a: "20", opts: ["10", "20", "30", "40"] });
+            }
+        });
+    });
 }
-
-function shuffle(arr) { return arr.map(String).sort(() => Math.random() - 0.5); }
-
-// Run the generators
-populateAlgebra();
