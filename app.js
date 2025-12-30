@@ -132,6 +132,9 @@ function selectSub(s) {
 function loadFile(chTitle, fileName) {
     active.ch = chTitle;
     const path = `data/${active.sub}/class${active.class}/${fileName}`;
+
+    console.log("System looking for file at:", path);
+
     const old = document.getElementById('data-script'); if(old) old.remove();
     const script = document.createElement('script');
     script.id = 'data-script'; script.src = path;
