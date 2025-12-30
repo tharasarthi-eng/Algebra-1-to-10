@@ -1,39 +1,29 @@
-// data/maths.js
 window.mathsData = {};
 
-// Create Class 1 to 10
+// Create Class 1-10 automatically
 for (let i = 1; i <= 10; i++) {
-    const cKey = `class${i}`;
-    window.mathsData[cKey] = {
+    const classKey = `class${i}`;
+    window.mathsData[classKey] = {
         "Algebra": {
-            "Variables & Expressions": {
-                "Easy": [], "Moderate": [], "Tough": []
-            },
-            "Equations": {
-                "Easy": [], "Moderate": [], "Tough": []
-            }
+            "Equations": { "Easy": [], "Moderate": [], "Tough": [] },
+            "Variables": { "Easy": [], "Moderate": [], "Tough": [] }
         },
         "Geometry": {
-            "Shapes & Angles": {
-                "Easy": [], "Moderate": [], "Tough": []
-            }
+            "Shapes": { "Easy": [], "Moderate": [], "Tough": [] }
         }
     };
 
-    // Auto-generate 100 questions for each
-    const chaps = Object.keys(window.mathsData[cKey]);
-    chaps.forEach(ch => {
-        const topics = Object.keys(window.mathsData[cKey][ch]);
-        topics.forEach(tp => {
-            const levels = window.mathsData[cKey][ch][tp];
-            for (let q = 0; q < 100; q++) {
-                // Easy
-                levels.Easy.push({ q: `${q+i} + x = ${q+i+2}. Find x.`, a: "2", opts: ["1", "2", "3", "0"] });
-                // Moderate
-                levels.Moderate.push({ q: `2x + ${i} = ${20+i}. Find x.`, a: "10", opts: ["5", "10", "15", "20"] });
-                // Tough
-                levels.Tough.push({ q: `Solve for x: (x/2) + ${i} = ${10+i}`, a: "20", opts: ["10", "20", "30", "40"] });
+    // Auto-generate 100 questions for every single topic
+    const chapters = window.mathsData[classKey];
+    Object.keys(chapters).forEach(ch => {
+        Object.keys(chapters[ch]).forEach(tp => {
+            for (let q = 1; q <= 100; q++) {
+                chapters[ch][tp].Easy.push({ q: `${q} + x = ${q + i}. Find x.`, a: i.toString(), opts: shuffle([i, i + 1, i - 1, 0]) });
+                chapters[ch][tp].Moderate.push({ q: `2x + ${i} = ${20 + i}. Find x.`, a: "10", opts: shuffle(["5", "10", "15", "20"]) });
+                chapters[ch][tp].Tough.push({ q: `Solve for x: (x/2) + ${i} = ${10 + i}`, a: "20", opts: shuffle(["10", "20", "30", "40"]) });
             }
         });
     });
 }
+
+function shuffle(arr) { return arr.map(String).sort(() => Math.random() - 0.5); }
