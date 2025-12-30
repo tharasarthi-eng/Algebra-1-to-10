@@ -1,36 +1,54 @@
 // data/maths.js
-window.mathsData = {
-    class1: {
-        "Addition": {
-            "Basic Sums": { "Easy": [], "Moderate": [], "Tough": [] }
+window.mathsData = {};
+
+// 1. Create structure for all 10 classes
+for (let i = 1; i <= 10; i++) {
+    window.mathsData[`class${i}`] = {};
+}
+
+// 2. Logic to populate Algebra for all classes
+function populateAlgebra() {
+    for (let c = 1; c <= 10; c++) {
+        const classKey = `class${c}`;
+        
+        // Defining Chapter based on class
+        let chapterName = "Algebra Basics";
+        if (c >= 7) chapterName = "Linear Equations";
+        if (c >= 9) chapterName = "Polynomials & Quadratics";
+
+        window.mathsData[classKey][chapterName] = {
+            "Introduction": { "Easy": [], "Moderate": [], "Tough": [] },
+            "Problem Solving": { "Easy": [], "Moderate": [], "Tough": [] }
+        };
+
+        const topic = window.mathsData[classKey][chapterName]["Introduction"];
+
+        // Generate 100 variations per level
+        for (let i = 0; i < 100; i++) {
+            // Level 1: Addition/Basic Variable
+            let n1 = Math.floor(Math.random() * 10) + c;
+            let n2 = Math.floor(Math.random() * 10);
+            topic.Easy.push({
+                q: `${n1} + x = ${n1 + n2}. Find x.`,
+                a: n2.toString(),
+                opts: shuffle([n2, n2 + 1, n2 - 1, n2 + 5])
+            });
+
+            // Level 3: Harder Equations
+            let coeff = Math.floor(Math.random() * 5) + 2;
+            let ans = Math.floor(Math.random() * 10) + 1;
+            let constVal = Math.floor(Math.random() * 20);
+            let result = (coeff * ans) + constVal;
+            topic.Tough.push({
+                q: `Solve for x: ${coeff}x + ${constVal} = ${result}`,
+                a: ans.toString(),
+                opts: shuffle([ans, ans + 2, ans * 2, ans + 1])
+            });
         }
-    },
-    class10: {
-        "Algebra": {
-            "Quadratic Equations": { "Easy": [], "Moderate": [], "Tough": [] }
-        }
-    }
-};
-
-// AUTO-GENERATOR FOR CLASS 10 ALGEBRA
-function generateAlgebra() {
-    const qCount = 100;
-    const target = window.mathsData.class10.Algebra["Quadratic Equations"];
-
-    for(let i=0; i<qCount; i++) {
-        // Easy: Find roots of (x-a)(x-b)=0
-        let r1 = Math.floor(Math.random() * 10) + 1;
-        let r2 = Math.floor(Math.random() * 10) + 1;
-        target.Easy.push({
-            q: `Find roots of: (x - ${r1})(x - ${r2}) = 0`,
-            a: `${r1}, ${r2}`,
-            opts: [`${r1}, ${r2}`, `${r1}, -${r2}`, `-${r1}, ${r2}`, `0, ${r1+r2}`]
-        });
-
-        // Tough: General ax^2 + bx + c = 0
-        // ... Logic for more complex generation goes here
     }
 }
 
-// 
-generateAlgebra();
+function shuffle(arr) { return arr.map(String).sort(() => Math.random() - 0.5); }
+
+// Run the generators
+populateAlgebra();
