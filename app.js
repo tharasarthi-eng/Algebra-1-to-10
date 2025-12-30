@@ -175,6 +175,46 @@ function loadChapterFile(chTitle, fileName) {
     document.head.appendChild(script);
 }
 
+// STEP 5: SELECT TOPIC -> SHOW LEVELS
+function selectTopic(t) {
+    active.tp = t; // Store selected topic name
+    showView('view-levels');
+    
+    const levels = ["Easy", "Moderate", "Tough"];
+    
+    // Render the Level buttons
+    document.getElementById('view-levels').innerHTML = levels.map(l => `
+        <div onclick="startPractice('${l}')" 
+             class="p-10 bg-white border-2 border-indigo-500 rounded-3xl text-center font-black text-xl cursor-pointer hover:bg-indigo-500 hover:text-white transition-all shadow-lg">
+            ${l}
+            <p class="text-[10px] mt-2 font-bold opacity-70">10 Questions</p>
+        </div>
+    `).join('');
+}
+
+// STEP 6: START PRACTICE (The Launcher)
+function startPractice(lvl) {
+    active.lvl = lvl;
+    active.qIdx = 0;
+    active.score = 0;
+
+    // CRITICAL: Access the global data loaded from the JS file
+    // Structure: window.currentChapterData[TopicName][LevelName]
+    if (window.currentChapterData && window.currentChapterData[active.tp]) {
+        active.pool = window.currentChapterData[active.tp][lvl];
+        
+        if (active.pool && active.pool.length > 0) {
+            showView('portal');
+            loadQuestion();
+        } else {
+            alert("No questions found for " + active.tp + " - " + lvl);
+        }
+    } else {
+        alert("Error: Data for this topic failed to load.");
+    }
+}
+
+
 function renderTopics() {
     showView('view-topics');
     const topics = Object.keys(window.currentChapterData);
