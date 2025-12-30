@@ -131,15 +131,28 @@ function selectSub(s) {
 
 function loadFile(chTitle, fileName) {
     active.ch = chTitle;
-    const path = `data/${active.sub}/class${active.class}/${fileName}`;
+    const path = `data/${active.sub.toLowerCase()}/class${active.class}/${fileName}`;
+    
+    const old = document.getElementById('data-script'); 
+    if(old) old.remove();
 
-    console.log("System looking for file at:", path);
-
-    const old = document.getElementById('data-script'); if(old) old.remove();
     const script = document.createElement('script');
-    script.id = 'data-script'; script.src = path;
-    script.onload = () => { if(window.currentChapterData) renderTopics(); };
-    script.onerror = () => alert("File not found: " + path);
+    script.id = 'data-script'; 
+    script.src = path;
+    
+    script.onload = () => { 
+        console.log("SUCCESS: Loaded " + path);
+        if(window.currentChapterData) {
+            renderTopics(); 
+        } else {
+            alert("FILE ERROR: The file loaded, but the data inside is not named 'window.currentChapterData'. Check the first line of your file!");
+        }
+    };
+    
+    script.onerror = () => {
+        alert("PATH ERROR: I cannot find the file at:\n" + path + "\n\nDouble check your folder names and filename!");
+    };
+    
     document.head.appendChild(script);
 }
 
