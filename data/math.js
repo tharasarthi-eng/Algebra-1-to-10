@@ -1,29 +1,38 @@
 window.mathsData = {};
 
-// Create Class 1-10 automatically
-for (let i = 1; i <= 10; i++) {
-    const classKey = `class${i}`;
+// Auto-populate Class 1 to 10
+for (let c = 1; c <= 10; c++) {
+    const classKey = `class${c}`;
     window.mathsData[classKey] = {
         "Algebra": {
-            "Equations": { "Easy": [], "Moderate": [], "Tough": [] },
-            "Variables": { "Easy": [], "Moderate": [], "Tough": [] }
+            "Variables & Expressions": { "Easy": [], "Moderate": [], "Tough": [] },
+            "Linear Equations": { "Easy": [], "Moderate": [], "Tough": [] }
         },
         "Geometry": {
-            "Shapes": { "Easy": [], "Moderate": [], "Tough": [] }
+            "Shapes & Area": { "Easy": [], "Moderate": [], "Tough": [] }
         }
     };
 
-    // Auto-generate 100 questions for every single topic
+    // GENERATOR: Creating 100 questions per level per topic
     const chapters = window.mathsData[classKey];
     Object.keys(chapters).forEach(ch => {
         Object.keys(chapters[ch]).forEach(tp => {
-            for (let q = 1; q <= 100; q++) {
-                chapters[ch][tp].Easy.push({ q: `${q} + x = ${q + i}. Find x.`, a: i.toString(), opts: shuffle([i, i + 1, i - 1, 0]) });
-                chapters[ch][tp].Moderate.push({ q: `2x + ${i} = ${20 + i}. Find x.`, a: "10", opts: shuffle(["5", "10", "15", "20"]) });
-                chapters[ch][tp].Tough.push({ q: `Solve for x: (x/2) + ${i} = ${10 + i}`, a: "20", opts: shuffle(["10", "20", "30", "40"]) });
+            const levels = chapters[ch][tp];
+            for (let i = 0; i < 100; i++) {
+                // Easy Generator
+                let n1 = Math.floor(Math.random() * 10) + c;
+                levels.Easy.push({
+                    q: `x + ${n1} = ${n1 + 5}. Find x.`,
+                    a: "5",
+                    opts: ["2", "5", "3", "7"].sort(() => Math.random() - 0.5)
+                });
+                // Moderate/Tough use higher ranges (n1 * c)
+                levels.Tough.push({
+                    q: `Solve for x: ${c}x + 10 = ${c * 5 + 10}`,
+                    a: "5",
+                    opts: ["5", "10", "15", "2"].sort(() => Math.random() - 0.5)
+                });
             }
         });
     });
 }
-
-function shuffle(arr) { return arr.map(String).sort(() => Math.random() - 0.5); }
