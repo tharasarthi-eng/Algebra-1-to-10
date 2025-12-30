@@ -1,8 +1,4 @@
-.gradient-bg { background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%); }
-.sidebar-open { transform: translateX(0) !important; }
-.card-zoom { transition: transform 0.2s; }
-.card-zoom:hover { transform: scale(1.03); }
-
-/* Lock Overlay Styles */
-.locked-level { filter: grayscale(1); opacity: 0.6; pointer-events: none; position: relative; }
-.lock-icon { position: absolute; top: 10px; right: 10px; }
+.hidden { display: none; }
+.locked { opacity: 0.5; filter: grayscale(1); pointer-events: none; }
+button:active { transform: scale(0.95); }
+#view-classes div:hover { transform: translateY(-5px); transition: 0.3s; }
