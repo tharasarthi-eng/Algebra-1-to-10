@@ -1,6 +1,6 @@
 window.mathsData = {};
 
-// Auto-populate Class 1 to 10
+//  Auto-populate Class 1 to 10
 for (let c = 1; c <= 10; c++) {
     const classKey = `class${c}`;
     window.mathsData[classKey] = {
