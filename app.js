@@ -1,24 +1,8 @@
-let lastLevel = Math.floor((JSON.parse(localStorage.getItem('vks_lms_db'))?.pts || 0) / 500) + 1;
-
-
-addlet db = JSON.parse(localStorage.getItem('vks_lms_db')) || { pts: 0, right: 0, wrong: 0, history: [] };
+// 1. DATA STATE
+let db = JSON.parse(localStorage.getItem('vks_lms_db')) || { pts: 0, right: 0, wrong: 0, history: [] };
+let lastLevel = Math.floor(db.pts / 500) + 1;
 let active = { class: 0, sub: '', ch: '', tp: '', lvl: '', qIdx: 0, score: 0, pool: [] };
 let navStack = [];
-
-const themes = {
-    Maths: 'indigo',
-    Science: 'emerald',
-    English: 'purple'
-};
-
-function selectSub(s) {
-    active.sub = s;
-    const color = themes[s];
-    // Update navbar and buttons dynamically
-    document.querySelector('nav').className = `bg-slate-900 border-b-4 border-${color}-500 ...`;
-    // Update other UI elements similarly
-}
-
 
 const syllabus = {
     class1: {
@@ -120,44 +104,124 @@ const syllabus = {
 };
 
 
+
+// 2. CORE ENGINE
 function init() {
     const v = document.getElementById('view-classes');
     if(!v) return;
-
-    // Ensure the container is visible and others are hidden
-    showView('view-classes'); 
     
+    showView('view-classes');
     v.innerHTML = "";
     for(let i=1; i<=10; i++) {
         v.innerHTML += `
-            <div onclick="selectClass(${i})" class="group p-8 bg-white shadow-sm border border-slate-100 rounded-[2.5rem] text-center cursor-pointer hover:border-indigo-600 hover:shadow-xl transition-all duration-300">
-                <p class="text-4xl font-black text-slate-800 group-hover:text-indigo-600 group-hover:scale-110 transition-all">${i}</p>
+            <div onclick="selectClass(${i})" class="group p-8 bg-white shadow-sm border border-slate-100 rounded-[2.5rem] text-center cursor-pointer hover:border-indigo-600 hover:shadow-xl transition-all">
+                <p class="text-4xl font-black text-slate-800 group-hover:text-indigo-600">${i}</p>
                 <p class="text-[10px] font-bold text-slate-400 uppercase mt-2">Grade</p>
             </div>`;
     }
     updateUI();
 }
 
+function updateUI() {
+    document.getElementById('nav-pts').innerText = db.pts;
+    if(document.getElementById('menu-pts')) document.getElementById('menu-pts').innerText = db.pts;
 
-function selectClass(n) { active.class = n; showView('view-subjects'); document.getElementById('view-subjects').innerHTML = ["Maths", "Science", "English"].map(s => `<div onclick="selectSub('${s}')" class="p-12 bg-white rounded-[3rem] shadow-sm border font-black text-2xl text-center uppercase cursor-pointer hover:shadow-xl transition-all">${s}</div>`).join(''); }
+    // XP & Level Logic
+    const ptsPerLvl = 500;
+    const currentLevel = Math.floor(db.pts / ptsPerLvl) + 1;
+    const xpInLevel = db.pts % ptsPerLvl;
+    const xpPerc = (xpInLevel / ptsPerLvl) * 100;
 
+    if (currentLevel > lastLevel) {
+        showLevelUpModal(currentLevel);
+        lastLevel = currentLevel;
+    }
 
-function selectSub(s) { active.sub = s; showView('view-chapters'); const chs = syllabus[`class${active.class}`] || {}; document.getElementById('view-chapters').innerHTML = Object.keys(chs).map(c => `<div onclick="loadFile('${c}', '${chs[c]}')" class="p-6 bg-white rounded-2xl border shadow-sm font-bold cursor-pointer hover:border-indigo-600 transition">${c}</div>`).join(''); }
-function loadFile(t, f) { active.ch = t; const path = `data/${active.sub.toLowerCase()}/class${active.class}/${f}`; const old = document.getElementById('data-script'); if(old) old.remove(); const s = document.createElement('script'); s.id = 'data-script'; s.src = path; s.onload = renderTopics; s.onerror = () => alert("File not found!"); document.head.appendChild(s); }
+    const ranks = ["Novice", "Scholar", "Expert", "Master", "Elite", "Legend"];
+    const rankTitle = ranks[Math.min(currentLevel - 1, ranks.length - 1)];
+    
+    if(document.getElementById('rank-name')) document.getElementById('rank-name').innerText = `Level ${currentLevel}: ${rankTitle}`;
+    if(document.getElementById('xp-ratio')) document.getElementById('xp-ratio').innerText = `${xpInLevel} / ${ptsPerLvl} XP`;
+    if(document.getElementById('xp-fill')) document.getElementById('xp-fill').style.width = xpPerc + "%";
 
+    const total = db.right + db.wrong;
+    const acc = total === 0 ? 0 : Math.round((db.right / total) * 100);
+    if(document.getElementById('stats-accuracy')) document.getElementById('stats-accuracy').innerText = acc + "%";
 
-function renderTopics() { showView('view-topics'); const ts = Object.keys(window.currentChapterData); document.getElementById('view-topics').innerHTML = ts.map(t => `<div onclick="selectTopic('${t}')" class="p-6 bg-white rounded-2xl border border-emerald-100 shadow-sm font-bold cursor-pointer hover:bg-emerald-50">${t}</div>`).join(''); }
+    const log = document.getElementById('progress-list');
+    if(log) {
+        log.innerHTML = db.history.slice(-4).reverse().map(h => `
+            <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl">
+                <p class="text-[9px] font-black uppercase">${h.topic}</p>
+                <p class="text-[8px] text-slate-400">${h.date}</p>
+            </div>
+        `).join('') || `<p class="text-center text-slate-300 text-[10px]">No History</p>`;
+    }
+}
 
+// 3. NAVIGATION
+function showView(id, isBacking = false) {
+    const views = ['view-classes', 'view-subjects', 'view-chapters', 'view-topics', 'view-levels', 'portal'];
+    const current = views.find(v => !document.getElementById(v).classList.contains('hidden'));
+    
+    if(!isBacking && current && current !== id) navStack.push(current);
+    
+    views.forEach(v => document.getElementById(v).classList.add('hidden'));
+    document.getElementById(id).classList.remove('hidden');
+    document.getElementById('global-back-btn').classList.toggle('hidden', id === 'view-classes');
+    updateBread(id);
+}
 
-function selectTopic(t) { active.tp = t; showView('view-levels'); document.getElementById('view-levels').innerHTML = ["Easy", "Moderate", "Tough"].map(l => `<div onclick="startPractice('${l}')" class="p-10 bg-white border-2 border-indigo-500 rounded-3xl text-center font-black cursor-pointer hover:bg-indigo-600 hover:text-white transition">${l}</div>`).join(''); }
+function goBack() {
+    if(navStack.length > 0) showView(navStack.pop(), true);
+}
 
+function updateBread(id) {
+    const b = document.getElementById('breadcrumb');
+    const maps = { 'view-classes': 'Home', 'view-subjects': `Class ${active.class}`, 'view-chapters': active.sub, 'portal': 'Quiz' };
+    b.innerText = maps[id] || 'LMS Portal';
+}
+
+function toggleMenu() {
+    document.getElementById('side-menu').classList.toggle('-translate-x-full');
+    document.getElementById('overlay').classList.toggle('hidden');
+    updateUI();
+}
+
+// 4. QUIZ FUNCTIONS
+function selectClass(n) { active.class = n; showView('view-subjects'); document.getElementById('view-subjects').innerHTML = ["Maths", "Science", "English"].map(s => `<div onclick="selectSub('${s}')" class="p-10 bg-white rounded-3xl border font-black text-center cursor-pointer hover:shadow-lg">${s}</div>`).join(''); }
+
+function selectSub(s) { active.sub = s; showView('view-chapters'); const chs = syllabus[`class${active.class}`] || {}; document.getElementById('view-chapters').innerHTML = Object.keys(chs).map(c => `<div onclick="loadFile('${c}', '${chs[c]}')" class="p-6 bg-white rounded-2xl border font-bold cursor-pointer hover:border-indigo-600">${c}</div>`).join(''); }
+
+function loadFile(t, f) { 
+    active.ch = t; 
+    const path = `data/${active.sub.toLowerCase()}/class${active.class}/${f}`;
+    const old = document.getElementById('data-script'); if(old) old.remove();
+    const s = document.createElement('script'); s.id = 'data-script'; s.src = path;
+    s.onload = renderTopics; s.onerror = () => alert("File not found!");
+    document.head.appendChild(s); 
+}
+
+function renderTopics() { 
+    showView('view-topics'); 
+    const ts = Object.keys(window.currentChapterData); 
+    document.getElementById('view-topics').innerHTML = ts.map(t => `<div onclick="selectTopic('${t}')" class="p-6 bg-white rounded-2xl border font-bold cursor-pointer hover:bg-emerald-50">${t}</div>`).join(''); 
+}
+
+function selectTopic(t) { active.tp = t; showView('view-levels'); document.getElementById('view-levels').innerHTML = ["Easy", "Moderate", "Tough"].map(l => `<div onclick="startPractice('${l}')" class="p-10 bg-white border-2 border-indigo-500 rounded-3xl text-center font-black cursor-pointer hover:bg-indigo-600 hover:text-white">${l}</div>`).join(''); }
 
 function startPractice(l) { active.lvl = l; active.pool = window.currentChapterData[active.tp][l]; active.qIdx = 0; active.score = 0; showView('portal'); loadQuestion(); }
 
 function loadQuestion() {
     const q = active.pool[active.qIdx];
-    document.getElementById('q-box').innerText = q.q;
-    document.getElementById('p-label').innerText = `${active.tp} • ${active.lvl}`;
+    const qBox = document.getElementById('q-box');
+    qBox.innerText = q.q;
+    
+    // KaTeX Render
+    if(window.katex) {
+        try { katex.render(q.q, qBox, { throwOnError: false, displayMode: true }); } catch(e){}
+    }
+
     const grid = document.getElementById('opts-grid'); grid.innerHTML = '';
     q.opts.forEach(o => {
         const b = document.createElement('button');
@@ -167,39 +231,25 @@ function loadQuestion() {
     });
     document.getElementById('next-btn').classList.add('hidden');
     document.getElementById('feedback').classList.add('hidden');
-
-// This will render LaTeX formulas like $x^2 + y^2 = z^2$ automatically
-renderMathInElement(document.getElementById('q-box'), {
-    delimiters: [
-        {left: '$$', right: '$$', display: true},
-        {left: '$', right: '$', display: false}
-    ]
-});
-
 }
 
 function check(val, ans) {
-    const fb = document.getElementById('feedback'); 
-    fb.classList.remove('hidden');
-    const qBox = document.getElementById('q-box');
+    const fb = document.getElementById('feedback'); fb.classList.remove('hidden');
     document.querySelectorAll('#opts-grid button').forEach(b => b.disabled = true);
     
     if(val == ans) {
-        fb.innerText = "CORRECT! +10 XP"; 
-        fb.className = "mt-6 p-4 rounded-xl font-bold bg-emerald-100 text-emerald-700 animate-bounce";
+        fb.innerText = "CORRECT! +10 XP"; fb.className = "mt-6 p-4 rounded-xl font-bold bg-emerald-100 text-emerald-700 animate-bounce";
         db.pts += 10; db.right += 1; active.score++;
-        if (window.confetti) confetti({ particleCount: 40, spread: 50, origin: { y: 0.8 } });
+        if (window.confetti) confetti({ particleCount: 50, spread: 60, origin: { y: 0.8 } });
     } else {
-        fb.innerText = "WRONG! -5 XP"; 
-        fb.className = "mt-6 p-4 rounded-xl font-bold bg-rose-100 text-rose-700";
-        qBox.classList.add('shake'); // Triggers CSS shake
-        setTimeout(() => qBox.classList.remove('shake'), 400);
+        fb.innerText = "WRONG! -5 XP"; fb.className = "mt-6 p-4 rounded-xl font-bold bg-rose-100 text-rose-700";
+        document.getElementById('q-box').classList.add('shake');
+        setTimeout(() => document.getElementById('q-box').classList.remove('shake'), 400);
         db.pts = Math.max(0, db.pts - 5); db.wrong += 1;
     }
     document.getElementById('next-btn').classList.remove('hidden');
     save();
 }
-
 
 function handleNext() {
     active.qIdx++; 
@@ -211,125 +261,21 @@ function handleNext() {
     }
 }
 
-// NAVIGATION ENGINE
-function showView(id, isBacking = false) {
-    const current = Array.from(document.querySelectorAll('main > div')).find(d => !d.classList.contains('hidden') && d.id !== 'breadcrumb');
-    if(!isBacking && current && current.id !== id) navStack.push(current.id);
-    document.querySelectorAll('main > div').forEach(d => { if(d.id !== 'breadcrumb') d.classList.add('hidden'); });
-    document.getElementById(id).classList.remove('hidden');
-    document.getElementById('global-back-btn').classList.toggle('hidden', id === 'view-classes');
-    updateBread(id);
-}
-
-function goBack() {
-    if(navStack.length === 0) return;
-    if(!document.getElementById('portal').classList.contains('hidden')) {
-        if(!confirm("Quit Quiz?")) return;
-    }
-    showView(navStack.pop(), true);
-}
-
-function updateBread(id) {
-    const b = document.getElementById('breadcrumb');
-    if(id === 'view-classes') b.innerText = "Home / Select Class";
-    else if(id === 'view-subjects') b.innerText = `Class ${active.class} / Select Subject`;
-    else if(id === 'view-chapters') b.innerText = `Class ${active.class} > ${active.sub}`;
-    else if(id === 'view-topics') b.innerText = `${active.ch} / Topics`;
-    else if(id === 'view-levels') b.innerText = `${active.tp} / Level`;
-    else if(id === 'portal') b.innerText = `Quiz: ${active.tp}`;
-}
-
-function toggleMenu() {
-    const menu = document.getElementById('side-menu');
-    const overlay = document.getElementById('overlay');
-    
-    // Toggle the classes
-    menu.classList.toggle('-translate-x-full');
-    overlay.classList.toggle('hidden');
-    
-    // Only update UI if menu is becoming visible
-    if (!menu.classList.contains('-translate-x-full')) {
-        updateUI();
-    }
-}
-
-function updateUI() {
-    // Basic Point Sync
-    document.getElementById('nav-pts').innerText = db.pts;
-    if(document.getElementById('menu-pts')) document.getElementById('menu-pts').innerText = db.pts;
-
-    // Level & XP Logic (500 pts per level)
-    const ptsPerLvl = 500;
-    const currentLevel = Math.floor(db.pts / ptsPerLvl) + 1;
-    const xpInLevel = db.pts % ptsPerLvl;
-    const xpPerc = (xpInLevel / ptsPerLvl) * 100;
-
-    // Trigger Level Up Modal
-    if (currentLevel > lastLevel) {
-        showLevelUpModal(currentLevel);
-        lastLevel = currentLevel;
-    }
-
-    // Update Status Portal Labels
-    const ranks = ["Novice", "Scholar", "Expert", "Master", "Elite", "Legend"];
-    const rankTitle = ranks[Math.min(currentLevel - 1, ranks.length - 1)];
-    
-    if(document.getElementById('rank-name')) 
-        document.getElementById('rank-name').innerText = `Level ${currentLevel}: ${rankTitle}`;
-    
-    if(document.getElementById('xp-ratio')) 
-        document.getElementById('xp-ratio').innerText = `${xpInLevel} / ${ptsPerLvl} XP`;
-    
-    if(document.getElementById('xp-fill')) 
-        document.getElementById('xp-fill').style.width = xpPerc + "%";
-
-    // Accuracy Calculation
-    const total = db.right + db.wrong;
-    const acc = total === 0 ? 0 : Math.round((db.right / total) * 100);
-    if(document.getElementById('stats-accuracy')) 
-        document.getElementById('stats-accuracy').innerText = acc + "%";
-    
-    // Original Stats Fallback
-    if(document.getElementById('stats-right')) document.getElementById('stats-right').innerText = db.right;
-    if(document.getElementById('stats-wrong')) document.getElementById('stats-wrong').innerText = db.wrong;
-
-    // Recent History Log
-    const log = document.getElementById('progress-list');
-    if(log) {
-        log.innerHTML = db.history.slice(-4).reverse().map(h => `
-            <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl mb-2">
-                <div class="flex justify-between items-center">
-                    <p class="text-[9px] font-black text-slate-800 uppercase">${h.topic}</p>
-                    <p class="text-[8px] font-bold text-slate-400">${h.date}</p>
-                </div>
-            </div>
-        `).join('') || `<p class="text-[10px] text-slate-300 text-center py-4">No History</p>`;
-    }
-}
-
 function showLevelUpModal(level) {
     const modal = document.createElement('div');
     modal.className = "fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/80 backdrop-blur-md";
     modal.id = "level-up-overlay";
-    modal.innerHTML = `
-        <div class="level-up-modal max-w-sm w-full p-10 rounded-[3rem] text-center text-white relative overflow-hidden bg-indigo-600">
-            <div class="text-6xl mb-4">🏆</div>
-            <h2 class="text-[10px] font-black uppercase tracking-widest opacity-70">Promotion</h2>
-            <h3 class="text-4xl font-black mt-2 mb-6">LEVEL ${level}</h3>
-            <p class="text-sm opacity-90 mb-8">Your knowledge is expanding! Keep going, Scholar.</p>
-            <button onclick="closeLevelUp()" class="w-full py-4 bg-white text-indigo-600 rounded-2xl font-black uppercase tracking-widest shadow-xl">Continue</button>
-        </div>`;
+    modal.innerHTML = `<div class="bg-indigo-600 p-10 rounded-[3rem] text-center text-white max-w-sm w-full shadow-2xl">
+        <div class="text-6xl mb-4">🏆</div>
+        <h3 class="text-4xl font-black mb-4 uppercase text-white">Level ${level}</h3>
+        <p class="text-sm opacity-90 mb-8 text-white">Rank Promoted! Your knowledge is expanding, Scholar.</p>
+        <button onclick="document.getElementById('level-up-overlay').remove()" class="w-full py-4 bg-white text-indigo-600 rounded-2xl font-black uppercase">Continue</button>
+    </div>`;
     document.body.appendChild(modal);
-    if (window.confetti) confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+    if (window.confetti) confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } });
 }
-
-function closeLevelUp() {
-    const m = document.getElementById('level-up-overlay');
-    if (m) m.remove();
-}
-
 
 function save() { localStorage.setItem('vks_lms_db', JSON.stringify(db)); updateUI(); }
 function resetData() { if(confirm("Reset progress?")) { localStorage.clear(); location.reload(); } }
 
-init();
+window.onload = init;
