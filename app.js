@@ -197,6 +197,14 @@ function updateUI() {
     document.getElementById('stats-right').innerText = db.right;
     document.getElementById('stats-wrong').innerText = db.wrong;
     document.getElementById('progress-list').innerHTML = db.history.slice(-5).reverse().map(h => `<div class="p-2 bg-slate-50 border-l-4 border-indigo-400 text-[10px] font-bold">${h.topic} - ${h.date}</div>`).join('') || "No activity yet.";
+const medalsDiv = document.getElementById('medals-container');
+    const milestone = Math.floor(db.pts / 100); 
+    
+    let medalHTML = '';
+    for(let i=0; i < milestone; i++) {
+        medalHTML += `<div class="w-8 h-8 bg-yellow-400 rounded-full border-2 border-yellow-600 flex items-center justify-center text-xs shadow-sm">⭐</div>`;
+    }
+    document.getElementById('medal-box').innerHTML = medalHTML;
 }
 
 function save() { localStorage.setItem('vks_lms_db', JSON.stringify(db)); updateUI(); }
