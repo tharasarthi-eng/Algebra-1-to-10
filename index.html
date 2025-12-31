@@ -14,11 +14,13 @@
 
     <nav class="bg-slate-900 text-white p-4 sticky top-0 z-50 flex justify-between items-center px-6 shadow-2xl">
         <div class="flex items-center gap-4">
-            <button onclick="toggleMenu()" class="p-2 hover:bg-slate-800 rounded-xl bg-slate-800/50 transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-                </svg>
-            </button>
+            <button onclick="toggleMenu()" class="relative p-2 hover:bg-slate-800 rounded-xl bg-slate-800/50 transition">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+    </svg>
+    <span id="nav-dot" class="absolute top-1 right-1 w-2.5 h-2.5 bg-indigo-500 border-2 border-slate-900 rounded-full hidden"></span>
+</button>
+
             <h1 onclick="location.reload()" class="text-xl font-black cursor-pointer tracking-tighter uppercase">teachingvks.</h1>
         </div>
 
