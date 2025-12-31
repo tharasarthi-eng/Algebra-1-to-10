@@ -31,11 +31,71 @@
         </div>
     </nav>
 
-    <div id="side-menu" class="fixed inset-y-0 left-0 w-80 bg-white shadow-2xl z-[60] transform -translate-x-full p-8 overflow-y-auto">
-        <div class="flex justify-between items-center mb-8">
-            <h2 class="font-black text-2xl text-indigo-600 italic">Dashboard</h2>
-            <button onclick="toggleMenu()" class="text-slate-400 hover:text-rose-500 font-bold text-2xl">&times;</button>
+    <div id="side-menu" class="fixed inset-y-0 left-0 w-85 bg-white shadow-2xl z-[60] transform -translate-x-full overflow-hidden flex flex-col">
+    <div class="p-8 bg-slate-900 text-white">
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-indigo-500 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-indigo-500/40">
+                    VK
+                </div>
+                <div>
+                    <h2 class="font-black text-lg leading-none uppercase tracking-tighter">Scholar Portal</h2>
+                    <p id="rank-name" class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mt-1">Level 1: Novice</p>
+                </div>
+            </div>
+            <button onclick="toggleMenu()" class="text-slate-400 hover:text-white transition-colors text-3xl">&times;</button>
         </div>
+
+        <div class="space-y-2">
+            <div class="flex justify-between text-[10px] font-black uppercase">
+                <span>Experience (XP)</span>
+                <span id="xp-ratio">0/100</span>
+            </div>
+            <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden p-[2px] border border-slate-700">
+                <div id="xp-fill" class="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 rounded-full transition-all duration-1000" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex-1 overflow-y-auto p-8 space-y-8">
+        <div class="grid grid-cols-2 gap-4">
+            <div class="bg-slate-50 p-5 rounded-[2rem] border border-slate-100">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Pts</p>
+                <p id="menu-pts" class="text-3xl font-black text-slate-800">0</p>
+            </div>
+            <div class="bg-indigo-50 p-5 rounded-[2rem] border border-indigo-100">
+                <p class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-1">Accuracy</p>
+                <p id="stats-accuracy" class="text-3xl font-black text-indigo-700">0%</p>
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Subject Mastery</h4>
+            <div class="space-y-3">
+                <div class="flex items-center gap-4">
+                    <div class="text-[10px] font-black w-12">MATHS</div>
+                    <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div id="mastery-math" class="h-full bg-indigo-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-[10px] font-black w-12">SCI</div>
+                    <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div id="mastery-sci" class="h-full bg-emerald-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Achievement Log</h4>
+            <div id="progress-list" class="space-y-3"></div>
+        </div>
+
+        <button onclick="resetData()" class="w-full py-4 text-[10px] font-black text-rose-400 hover:text-white hover:bg-rose-500 border border-rose-200 rounded-2xl transition-all uppercase tracking-widest">Wipe Data History</button>
+    </div>
+</div>
+
 
         <div class="space-y-6">
             <div class="bg-indigo-600 p-6 rounded-3xl text-white shadow-lg shadow-indigo-200">
