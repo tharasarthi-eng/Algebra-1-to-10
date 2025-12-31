@@ -1,16 +1,15 @@
-/* --- 1. Global Reset & Core Styling --- */
+/* --- 1. Global Reset & Mobile Safety --- */
 :root {
     --primary: #4f46e5;
-    --primary-hover: #4338ca;
     --success: #10b981;
     --danger: #ef4444;
-    --slate-dark: #0f172a;
 }
 
 body {
     -webkit-tap-highlight-color: transparent;
     scroll-behavior: smooth;
-    overflow-x: hidden; /* Prevent horizontal body shake on mobile */
+    overflow-x: hidden; 
+    line-height: 1.5;
 }
 
 /* Smooth View Transitions */
@@ -35,64 +34,80 @@ main > div:not(.hidden) {
     transform: translateX(-100%);
 }
 
-#xp-fill {
-    box-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
-}
+/* --- 3. The Quiz Portal (Space & Line Fix) --- */
 
-/* --- 3. Quiz Portal (The "Fix" for Mobile) --- */
-
-/* Flexible container */
 #portal .bg-white {
     width: 95%; 
     max-width: 650px;
     margin: 10px auto;
-    padding: 1.25rem !important; /* Smaller padding for mobile screens */
+    padding: 1.25rem !important;
     border-radius: 2rem !important;
 }
 
-/* The Question Box: Removed fixed heights and flex centering */
+/* THE FIX: Question Box */
 #q-box {
-    display: block !important; /* Allows vertical text flow */
+    display: block !important; /* Force block to allow multi-line text */
+    width: 100% !important;
     height: auto !important;
-    min-height: 120px !important;
+    min-height: 100px !important;
     padding: 1.5rem !important;
-    text-align: center;
-    word-wrap: break-word;
+    
+    /* Text Spacing Fixes */
+    white-space: normal !important;   /* Allows text to wrap to next line */
+    word-spacing: 0.1em;              /* Ensures space between words */
+    word-wrap: break-word;            /* Breaks long technical words */
     overflow-wrap: break-word;
+    
+    text-align: center;
     font-size: 1.2rem;
-    line-height: 1.6;
+    font-weight: 600;
+    line-height: 1.6; /* Better vertical space between lines */
+    
     background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
     box-shadow: inset 0 2px 10px rgba(0,0,0,0.3), 0 20px 40px -10px rgba(79, 70, 229, 0.4);
 }
 
-/* Math Formula Scaling (KaTeX) */
+/* Math Formula Multi-Line Fix (KaTeX) */
 .katex-display {
     display: block !important;
     margin: 1em 0;
     width: 100%;
-    overflow-x: auto !important; /* Fixes wide formulas by adding a scrollbar */
+    
+    /* Avoid forced scrolling, try to fit instead */
+    white-space: normal !important; 
+    overflow-x: auto; /* Fallback only for massive equations */
     overflow-y: hidden;
+    
     text-align: center;
-    -webkit-overflow-scrolling: touch; /* Smooth swipe for iPhone */
-    padding: 10px 0;
+    -webkit-overflow-scrolling: touch;
+    padding: 5px 0;
 }
 
-/* --- 4. Option Grid & Buttons --- */
+/* Make KaTeX fonts slightly smaller on small screens to fit on one line */
+@media (max-width: 480px) {
+    .katex { font-size: 0.95em !important; }
+}
+
+/* --- 4. Options Grid --- */
 #opts-grid {
-    grid-template-columns: 1fr !important; /* Single column for mobile reliability */
-    gap: 0.75rem !important;
+    display: grid !important;
+    grid-template-columns: 1fr !important; /* Stacked for mobile */
+    gap: 0.8rem !important;
     margin-top: 1.5rem;
 }
 
 #opts-grid button {
     width: 100%;
-    padding: 1rem !important;
+    padding: 1.2rem !important;
     font-size: 1rem !important;
-    white-space: normal !important; /* Allows long answers to wrap to 2-3 lines */
-    text-align: left; /* Better readability for long text on mobile */
-    height: auto !important;
-    min-height: 55px;
-    border-radius: 1rem !important;
+    
+    /* Text Wrapping for Options */
+    white-space: normal !important;
+    text-align: left; /* Better for reading on mobile */
+    
+    background: #ffffff;
+    border: 2px solid #f1f5f9;
+    border-radius: 1.2rem !important;
     transition: all 0.2s ease;
 }
 
@@ -102,7 +117,7 @@ main > div:not(.hidden) {
     transform: translateY(-2px);
 }
 
-/* --- 5. Feedback & Animations --- */
+/* --- 5. Feedback & Level Up --- */
 .shake {
     animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
 }
@@ -114,11 +129,8 @@ main > div:not(.hidden) {
     40%, 60% { transform: translate3d(4px, 0, 0); }
 }
 
-/* Level Up Modal */
 .level-up-modal {
     animation: levelUpPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-    width: 90%;
-    max-width: 380px;
 }
 
 @keyframes levelUpPop {
@@ -126,29 +138,13 @@ main > div:not(.hidden) {
     100% { transform: scale(1); opacity: 1; }
 }
 
-/* --- 6. Desktop Enhancements (Tablets/Laptops) --- */
+/* --- 6. Desktop Polish --- */
 @media (min-width: 768px) {
-    #portal .bg-white {
-        padding: 2.5rem !important;
-    }
-    
     #q-box {
         font-size: 1.5rem;
-        padding: 2.5rem !important;
-        border-radius: 3rem !important;
+        padding: 3rem !important;
     }
-
     #opts-grid button {
-        text-align: center; /* Center text on larger screens */
-        padding: 1.25rem !important;
+        text-align: center;
     }
-}
-
-/* Custom Scrollbar for Mobile Math */
-.katex-display::-webkit-scrollbar {
-    height: 4px;
-}
-.katex-display::-webkit-scrollbar-thumb {
-    background: #4f46e5;
-    border-radius: 10px;
 }
