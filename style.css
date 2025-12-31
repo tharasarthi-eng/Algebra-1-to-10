@@ -135,3 +135,18 @@ main > div:not(.hidden) {
         text-align: center;
     }
 }
+
+/* Allow math to be swiped on small screens */
+.katex-display {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
+    padding: 10px 0;
+}
+
+/* Ensure the question box doesn't have a fixed height */
+#q-box {
+    height: auto !important;
+    min-height: 120px;
+    word-wrap: break-word;
+}
