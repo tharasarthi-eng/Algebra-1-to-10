@@ -215,23 +215,47 @@ function startPractice(l) { active.lvl = l; active.pool = window.currentChapterD
 function loadQuestion() {
     const q = active.pool[active.qIdx];
     const qBox = document.getElementById('q-box');
-    qBox.innerText = q.q;
     
-    // KaTeX Render
+    // 1. Clear previous content and set text
+    // Use innerHTML so KaTeX can target the content properly
+    qBox.innerHTML = q.q; 
+    
+    // 2. Render Math with Reflow Logic
     if(window.katex) {
-        try { katex.render(q.q, qBox, { throwOnError: false, displayMode: true }); } catch(e){}
+        try { 
+            katex.render(q.q, qBox, { 
+                throwOnError: false, 
+                displayMode: true, // Centers the math and gives it room
+                trust: true 
+            }); 
+        } catch(e) {
+            console.error("KaTeX Error:", e);
+            qBox.innerText = q.q; // Fallback to plain text if math fails
+        }
     }
 
-    const grid = document.getElementById('opts-grid'); grid.innerHTML = '';
+    // 3. Populate Options
+    const grid = document.getElementById('opts-grid'); 
+    grid.innerHTML = '';
+    
     q.opts.forEach(o => {
         const b = document.createElement('button');
-        b.className = "p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold hover:border-indigo-600 hover:bg-white transition-all";
-        b.innerText = o; b.onclick = () => check(o, q.a);
+        // 'break-words' and 'h-auto' are critical for mobile responsiveness
+        b.className = "p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold hover:border-indigo-600 hover:bg-white transition-all text-sm md:text-base break-words h-auto min-h-[60px] text-left md:text-center";
+        b.innerText = o; 
+        b.onclick = () => check(o, q.a);
         grid.appendChild(b);
     });
+    
+    // Reset UI states
     document.getElementById('next-btn').classList.add('hidden');
     document.getElementById('feedback').classList.add('hidden');
+    document.getElementById('progress-bar').style.width = (active.qIdx / active.pool.length * 100) + "%";
+
+    // 4. Scroll to top (Important for mobile users after clicking 'Next')
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
 
 function check(val, ans) {
     const fb = document.getElementById('feedback'); fb.classList.remove('hidden');
