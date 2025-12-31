@@ -2,6 +2,21 @@ let db = JSON.parse(localStorage.getItem('vks_lms_db')) || { pts: 0, right: 0, w
 let active = { class: 0, sub: '', ch: '', tp: '', lvl: '', qIdx: 0, score: 0, pool: [] };
 let navStack = [];
 
+const themes = {
+    Maths: 'indigo',
+    Science: 'emerald',
+    English: 'purple'
+};
+
+function selectSub(s) {
+    active.sub = s;
+    const color = themes[s];
+    // Update navbar and buttons dynamically
+    document.querySelector('nav').className = `bg-slate-900 border-b-4 border-${color}-500 ...`;
+    // Update other UI elements similarly
+}
+
+
 const syllabus = {
     class1: {
         "1. Shapes and Space": "c1_ch1_shapes.js",
