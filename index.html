@@ -33,43 +33,92 @@
         </div>
     </nav>
 
-    <div id="side-menu" class="fixed inset-y-0 left-0 w-85 bg-white shadow-2xl z-[60] transform -translate-x-full overflow-hidden flex flex-col">
-    <div class="p-8 bg-slate-900 text-white">
-        <div class="flex justify-between items-center mb-6">
-            <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-indigo-500 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg shadow-indigo-500/40">
-                    VK
+        <div id="side-menu" class="fixed inset-y-0 left-0 w-80 bg-white shadow-2xl z-[60] transform -translate-x-full overflow-hidden flex flex-col">
+        <div class="p-8 bg-slate-900 text-white">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-indigo-500 rounded-2xl flex items-center justify-center font-black text-xl shadow-lg">VK</div>
+                    <div>
+                        <h2 class="font-black text-lg leading-none uppercase tracking-tighter">Scholar Portal</h2>
+                        <p id="rank-name" class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mt-1">Level 1: Novice</p>
+                    </div>
                 </div>
-                <div>
-                    <h2 class="font-black text-lg leading-none uppercase tracking-tighter">Scholar Portal</h2>
-                    <p id="rank-name" class="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mt-1">Level 1: Novice</p>
+                <button onclick="toggleMenu()" class="text-slate-400 hover:text-white text-3xl">&times;</button>
+            </div>
+            <div class="space-y-2">
+                <div class="flex justify-between text-[10px] font-black uppercase"><span>XP</span> <span id="xp-ratio">0/100</span></div>
+                <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden p-[2px] border border-slate-700">
+                    <div id="xp-fill" class="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 rounded-full transition-all duration-1000" style="width: 0%"></div>
                 </div>
             </div>
-            <button onclick="toggleMenu()" class="text-slate-400 hover:text-white transition-colors text-3xl">&times;</button>
         </div>
 
-        <div class="space-y-2">
-            <div class="flex justify-between text-[10px] font-black uppercase">
-                <span>Experience (XP)</span>
-                <span id="xp-ratio">0/100</span>
+        <div class="flex-1 overflow-y-auto p-8 space-y-8">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-slate-50 p-5 rounded-[2rem] border border-slate-100">
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Pts</p>
+                    <p id="menu-pts" class="text-3xl font-black text-slate-800">0</p>
+                </div>
+                <div class="bg-indigo-50 p-5 rounded-[2rem] border border-indigo-100">
+                    <p class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-1">Accuracy</p>
+                    <p id="stats-accuracy" class="text-3xl font-black text-indigo-700">0%</p>
+                </div>
             </div>
-            <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden p-[2px] border border-slate-700">
-                <div id="xp-fill" class="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 rounded-full transition-all duration-1000" style="width: 0%"></div>
+            <div>
+                <h4 class="text-[10px] font-black text-slate-400 uppercase mb-4">History</h4>
+                <div id="progress-list" class="space-y-3"></div>
             </div>
+            <button onclick="resetData()" class="w-full py-3 text-[10px] font-black text-rose-400 border border-rose-100 rounded-xl">RESET</button>
         </div>
-    </div>
+    </div> ```
 
-    <div class="flex-1 overflow-y-auto p-8 space-y-8">
-        <div class="grid grid-cols-2 gap-4">
-            <div class="bg-slate-50 p-5 rounded-[2rem] border border-slate-100">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total Pts</p>
-                <p id="menu-pts" class="text-3xl font-black text-slate-800">0</p>
-            </div>
-            <div class="bg-indigo-50 p-5 rounded-[2rem] border border-indigo-100">
-                <p class="text-[10px] font-black text-indigo-500 uppercase tracking-widest mb-1">Accuracy</p>
-                <p id="stats-accuracy" class="text-3xl font-black text-indigo-700">0%</p>
-            </div>
-        </div>
+---
+
+### Fix 2: Updated `app.js` (Fixed Logic)
+Replace the top of your `app.js` and the `loadQuestion` function with this corrected logic:
+
+```javascript
+// 1. Initialize DB first
+let db = JSON.parse(localStorage.getItem('vks_lms_db')) || { pts: 0, right: 0, wrong: 0, history: [] };
+// 2. Then calculate lastLevel
+let lastLevel = Math.floor(db.pts / 500) + 1;
+let active = { class: 0, sub: '', ch: '', tp: '', lvl: '', qIdx: 0, score: 0, pool: [] };
+let navStack = [];
+
+// ... [Keep syllabus and themes] ...
+
+function loadQuestion() {
+    const q = active.pool[active.qIdx];
+    document.getElementById('q-box').innerText = q.q;
+    document.getElementById('p-label').innerText = `${active.tp} • ${active.lvl}`;
+    const grid = document.getElementById('opts-grid'); 
+    grid.innerHTML = '';
+    
+    q.opts.forEach(o => {
+        const b = document.createElement('button');
+        b.className = "p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold hover:border-indigo-600 hover:bg-white transition-all";
+        b.innerText = o; 
+        b.onclick = () => check(o, q.a);
+        grid.appendChild(b);
+    });
+    
+    document.getElementById('next-btn').classList.add('hidden');
+    document.getElementById('feedback').classList.add('hidden');
+
+    // FIXED: Use standard katex.render for the q-box
+    try {
+        if (window.katex) {
+            katex.render(q.q, document.getElementById('q-box'), {
+                throwOnError: false,
+                displayMode: true
+            });
+        }
+    } catch (e) { console.log("Katex skipped: Plain text used."); }
+}
+
+// Ensure init runs after DOM is ready
+window.onload = init;
+
 
         <div class="space-y-4">
             <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Subject Mastery</h4>
