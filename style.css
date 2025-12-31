@@ -1,17 +1,19 @@
-/* --- Global Reset & Responsiveness --- */
+/* --- 1. Global Reset & Core Styling --- */
 :root {
     --primary: #4f46e5;
+    --primary-hover: #4338ca;
     --success: #10b981;
     --danger: #ef4444;
+    --slate-dark: #0f172a;
 }
 
 body {
     -webkit-tap-highlight-color: transparent;
     scroll-behavior: smooth;
-    overflow-x: hidden; /* Prevents side-scrolling on mobile */
+    overflow-x: hidden; /* Prevent horizontal body shake on mobile */
 }
 
-/* --- View Transitions --- */
+/* Smooth View Transitions */
 main > div:not(.hidden) {
     animation: fadeIn 0.4s ease-out;
 }
@@ -21,63 +23,12 @@ main > div:not(.hidden) {
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- Responsive Quiz Portal --- */
-#portal {
-    width: 100%;
-    padding: 0 5px; /* Slight margin for mobile edges */
-}
-
-#portal .bg-white {
-    width: 100%;
-    max-width: 600px;
-    padding: 1.5rem !important; /* Reduced padding for mobile */
-    margin: 0 auto;
-    border-radius: 2rem !important;
-}
-
-/* THE FIX: Question Box Flexibility */
-#q-box {
-    min-height: auto !important; /* Allow it to grow */
-    height: auto !important;
-    padding: 1.5rem !important;
-    font-size: 1.15rem !important; /* Scaled down for mobile */
-    line-height: 1.5;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    box-shadow: inset 0 2px 10px rgba(0,0,0,0.3), 0 20px 40px -10px rgba(79, 70, 229, 0.3);
-}
-
-/* Math Formula Scaling (KaTeX) */
-.katex-display {
-    overflow-x: auto; /* Scroll math if too wide */
-    overflow-y: hidden;
-    padding: 8px 0;
-    margin: 0.5em 0;
-    max-width: 100%;
-    -webkit-overflow-scrolling: touch;
-}
-
-/* --- Responsive Option Grid --- */
-#opts-grid {
-    grid-template-columns: 1fr !important; /* Stack buttons on mobile */
-    gap: 0.75rem !important;
-}
-
-#opts-grid button {
-    padding: 0.85rem 1rem !important;
-    font-size: 0.95rem !important;
-    white-space: normal !important; /* Wrap text in buttons */
-    text-align: left;
-    height: auto !important;
-    border-radius: 1rem !important;
-}
-
-/* --- Side Menu Glassmorphism --- */
+/* --- 2. Side Menu (Status Portal) --- */
 #side-menu {
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     left: 0;
     backdrop-filter: blur(10px);
-    border-right: 1px solid rgba(0, 0, 0, 0.05);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 #side-menu.-translate-x-full {
@@ -88,7 +39,70 @@ main > div:not(.hidden) {
     box-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
 }
 
-/* --- Interactive States --- */
+/* --- 3. Quiz Portal (The "Fix" for Mobile) --- */
+
+/* Flexible container */
+#portal .bg-white {
+    width: 95%; 
+    max-width: 650px;
+    margin: 10px auto;
+    padding: 1.25rem !important; /* Smaller padding for mobile screens */
+    border-radius: 2rem !important;
+}
+
+/* The Question Box: Removed fixed heights and flex centering */
+#q-box {
+    display: block !important; /* Allows vertical text flow */
+    height: auto !important;
+    min-height: 120px !important;
+    padding: 1.5rem !important;
+    text-align: center;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    box-shadow: inset 0 2px 10px rgba(0,0,0,0.3), 0 20px 40px -10px rgba(79, 70, 229, 0.4);
+}
+
+/* Math Formula Scaling (KaTeX) */
+.katex-display {
+    display: block !important;
+    margin: 1em 0;
+    width: 100%;
+    overflow-x: auto !important; /* Fixes wide formulas by adding a scrollbar */
+    overflow-y: hidden;
+    text-align: center;
+    -webkit-overflow-scrolling: touch; /* Smooth swipe for iPhone */
+    padding: 10px 0;
+}
+
+/* --- 4. Option Grid & Buttons --- */
+#opts-grid {
+    grid-template-columns: 1fr !important; /* Single column for mobile reliability */
+    gap: 0.75rem !important;
+    margin-top: 1.5rem;
+}
+
+#opts-grid button {
+    width: 100%;
+    padding: 1rem !important;
+    font-size: 1rem !important;
+    white-space: normal !important; /* Allows long answers to wrap to 2-3 lines */
+    text-align: left; /* Better readability for long text on mobile */
+    height: auto !important;
+    min-height: 55px;
+    border-radius: 1rem !important;
+    transition: all 0.2s ease;
+}
+
+#opts-grid button:hover:not(:disabled) {
+    border-color: var(--primary);
+    background-color: #f8fafc;
+    transform: translateY(-2px);
+}
+
+/* --- 5. Feedback & Animations --- */
 .shake {
     animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
 }
@@ -100,16 +114,11 @@ main > div:not(.hidden) {
     40%, 60% { transform: translate3d(4px, 0, 0); }
 }
 
-#opts-grid button:active {
-    transform: scale(0.97);
-    background-color: #f8fafc;
-}
-
-/* --- Level Up Modal --- */
+/* Level Up Modal */
 .level-up-modal {
     animation: levelUpPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     width: 90%;
-    max-width: 350px;
+    max-width: 380px;
 }
 
 @keyframes levelUpPop {
@@ -117,36 +126,29 @@ main > div:not(.hidden) {
     100% { transform: scale(1); opacity: 1; }
 }
 
-/* --- Media Queries for Tablets and Desktop --- */
+/* --- 6. Desktop Enhancements (Tablets/Laptops) --- */
 @media (min-width: 768px) {
-    #q-box {
-        padding: 2.5rem !important;
-        font-size: 1.5rem !important;
-        border-radius: 3rem !important;
-    }
-
     #portal .bg-white {
         padding: 2.5rem !important;
     }
+    
+    #q-box {
+        font-size: 1.5rem;
+        padding: 2.5rem !important;
+        border-radius: 3rem !important;
+    }
 
     #opts-grid button {
-        padding: 1rem 1.5rem !important;
-        font-size: 1.1rem !important;
-        text-align: center;
+        text-align: center; /* Center text on larger screens */
+        padding: 1.25rem !important;
     }
 }
 
-/* Allow math to be swiped on small screens */
-.katex-display {
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling for iOS */
-    padding: 10px 0;
+/* Custom Scrollbar for Mobile Math */
+.katex-display::-webkit-scrollbar {
+    height: 4px;
 }
-
-/* Ensure the question box doesn't have a fixed height */
-#q-box {
-    height: auto !important;
-    min-height: 120px;
-    word-wrap: break-word;
+.katex-display::-webkit-scrollbar-thumb {
+    background: #4f46e5;
+    border-radius: 10px;
 }
