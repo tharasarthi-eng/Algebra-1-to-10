@@ -193,14 +193,42 @@ function selectClass(n) { active.class = n; showView('view-subjects'); document.
 
 function selectSub(s) { active.sub = s; showView('view-chapters'); const chs = syllabus[`class${active.class}`] || {}; document.getElementById('view-chapters').innerHTML = Object.keys(chs).map(c => `<div onclick="loadFile('${c}', '${chs[c]}')" class="p-6 bg-white rounded-2xl border font-bold cursor-pointer hover:border-indigo-600">${c}</div>`).join(''); }
 
-function loadFile(t, f) { 
-    active.ch = t; 
-    const path = `data/${active.sub.toLowerCase()}/class${active.class}/${f}`;
-    const old = document.getElementById('data-script'); if(old) old.remove();
-    const s = document.createElement('script'); s.id = 'data-script'; s.src = path;
-    s.onload = renderTopics; s.onerror = () => alert("File not found!");
-    document.head.appendChild(s); 
+function loadQuestion() {
+    const q = active.pool[active.qIdx];
+    const qBox = document.getElementById('q-box');
+    
+    // 1. Reset the box and set as HTML
+    // This ensures spaces in your strings are respected by the browser
+    qBox.innerHTML = q.q; 
+
+    // 2. Use KaTeX "Auto-Render" instead of rendering the whole box
+    // This looks for $...$ or $$...$$ and only turns those parts into math,
+    // leaving your normal words and spaces alone.
+    if (window.renderMathInElement) {
+        renderMathInElement(qBox, {
+            delimiters: [
+                {left: '$$', right: '$$', display: true},
+                {left: '$', right: '$', display: false}
+            ],
+            throwOnError: false
+        });
+    }
+
+    // 3. Options Grid (Keeping it mobile-friendly)
+    const grid = document.getElementById('opts-grid');
+    grid.innerHTML = '';
+    q.opts.forEach(o => {
+        const b = document.createElement('button');
+        b.className = "p-4 bg-white border-2 border-slate-100 rounded-2xl font-bold hover:border-indigo-600 transition-all text-left shadow-sm";
+        b.innerText = o;
+        b.onclick = () => check(o, q.a);
+        grid.appendChild(b);
+    });
+
+    document.getElementById('next-btn').classList.add('hidden');
+    document.getElementById('feedback').classList.add('hidden');
 }
+
 
 function renderTopics() { 
     showView('view-topics'); 
