@@ -6,26 +6,25 @@
     <title>teachingvks. | LMS Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
-<script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-900 overflow-x-hidden">
 
     <nav class="bg-slate-900 text-white p-4 sticky top-0 z-50 flex justify-between items-center px-6 shadow-2xl">
         <div class="flex items-center gap-4">
             <button onclick="toggleMenu()" class="relative p-2 hover:bg-slate-800 rounded-xl bg-slate-800/50 transition">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-    </svg>
-    <span id="nav-dot" class="absolute top-1 right-1 w-2.5 h-2.5 bg-indigo-500 border-2 border-slate-900 rounded-full hidden"></span>
-</button>
-
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+                <span id="nav-dot" class="absolute top-1 right-1 w-2.5 h-2.5 bg-indigo-500 border-2 border-slate-900 rounded-full hidden"></span>
+            </button>
             <h1 onclick="location.reload()" class="text-xl font-black cursor-pointer tracking-tighter uppercase">teachingvks.</h1>
         </div>
 
         <div class="flex items-center gap-3">
-            <button id="global-back-btn" onclick="goBack()" class="hidden px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg border border-indigo-400/30">
+            <button id="global-back-btn" onclick="goBack()" class="hidden px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg">
                 &larr; Previous
             </button>
             <div class="h-6 w-[1px] bg-slate-700 mx-1"></div>
@@ -33,7 +32,7 @@
         </div>
     </nav>
 
-        <div id="side-menu" class="fixed inset-y-0 left-0 w-80 bg-white shadow-2xl z-[60] transform -translate-x-full overflow-hidden flex flex-col">
+    <div id="side-menu" class="fixed inset-y-0 left-0 w-80 bg-white shadow-2xl z-[60] transform -translate-x-full overflow-hidden flex flex-col">
         <div class="p-8 bg-slate-900 text-white">
             <div class="flex justify-between items-center mb-6">
                 <div class="flex items-center gap-3">
@@ -65,87 +64,10 @@
                 </div>
             </div>
             <div>
-                <h4 class="text-[10px] font-black text-slate-400 uppercase mb-4">History</h4>
+                <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Achievement Log</h4>
                 <div id="progress-list" class="space-y-3"></div>
             </div>
-            <button onclick="resetData()" class="w-full py-3 text-[10px] font-black text-rose-400 border border-rose-100 rounded-xl">RESET</button>
-        </div>
-    </div> ```
-
----
-
-### Fix 2: Updated `app.js` (Fixed Logic)
-Replace the top of your `app.js` and the `loadQuestion` function with this corrected logic:
-
-```javascript
-// 1. Initialize DB first
-let db = JSON.parse(localStorage.getItem('vks_lms_db')) || { pts: 0, right: 0, wrong: 0, history: [] };
-// 2. Then calculate lastLevel
-let lastLevel = Math.floor(db.pts / 500) + 1;
-let active = { class: 0, sub: '', ch: '', tp: '', lvl: '', qIdx: 0, score: 0, pool: [] };
-let navStack = [];
-
-// ... [Keep syllabus and themes] ...
-
-function loadQuestion() {
-    const q = active.pool[active.qIdx];
-    document.getElementById('q-box').innerText = q.q;
-    document.getElementById('p-label').innerText = `${active.tp} • ${active.lvl}`;
-    const grid = document.getElementById('opts-grid'); 
-    grid.innerHTML = '';
-    
-    q.opts.forEach(o => {
-        const b = document.createElement('button');
-        b.className = "p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold hover:border-indigo-600 hover:bg-white transition-all";
-        b.innerText = o; 
-        b.onclick = () => check(o, q.a);
-        grid.appendChild(b);
-    });
-    
-    document.getElementById('next-btn').classList.add('hidden');
-    document.getElementById('feedback').classList.add('hidden');
-
-    // FIXED: Use standard katex.render for the q-box
-    try {
-        if (window.katex) {
-            katex.render(q.q, document.getElementById('q-box'), {
-                throwOnError: false,
-                displayMode: true
-            });
-        }
-    } catch (e) { console.log("Katex skipped: Plain text used."); }
-}
-
-// Ensure init runs after DOM is ready
-window.onload = init;
-
-
-        <div class="space-y-4">
-            <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Subject Mastery</h4>
-            <div class="space-y-3">
-                <div class="flex items-center gap-4">
-                    <div class="text-[10px] font-black w-12">MATHS</div>
-                    <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                        <div id="mastery-math" class="h-full bg-indigo-500" style="width: 0%"></div>
-                    </div>
-                </div>
-                <div class="flex items-center gap-4">
-                    <div class="text-[10px] font-black w-12">SCI</div>
-                    <div class="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                        <div id="mastery-sci" class="h-full bg-emerald-500" style="width: 0%"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div>
-            <h4 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Achievement Log</h4>
-            <div id="progress-list" class="space-y-3"></div>
-        </div>
-
-        
-    </div>
-</div>
+            <button onclick="resetData()" class="w-full py-4 text-[10px] font-black text-rose-400 border border-rose-100 rounded-2xl uppercase tracking-widest">Reset Data</button>
         </div>
     </div>
 
