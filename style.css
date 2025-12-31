@@ -75,3 +75,29 @@ main > div:not(.hidden) {
     transform: translateX(5px);
 }
 
+
+/* Level Up Animation */
+@keyframes levelUpPop {
+    0% { transform: scale(0.5) translateY(50px); opacity: 0; }
+    70% { transform: scale(1.1) translateY(-10px); opacity: 1; }
+    100% { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+.level-up-modal {
+    animation: levelUpPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    box-shadow: 0 25px 50px -12px rgba(79, 70, 229, 0.5);
+}
+
+.confetti-slow {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #ffd700;
+    animation: fall 3s linear infinite;
+}
+
+@keyframes fall {
+    to { transform: translateY(100vh) rotate(360deg); }
+}
+
