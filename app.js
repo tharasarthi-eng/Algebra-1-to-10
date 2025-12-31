@@ -122,12 +122,22 @@ const syllabus = {
 
 function init() {
     const v = document.getElementById('view-classes');
+    if(!v) return;
+
+    // Ensure the container is visible and others are hidden
+    showView('view-classes'); 
+    
     v.innerHTML = "";
     for(let i=1; i<=10; i++) {
-        v.innerHTML += `<div onclick="selectClass(${i})" class="p-10 bg-white shadow-sm border border-slate-100 rounded-[2.5rem] text-center cursor-pointer hover:border-indigo-600 hover:shadow-xl transition-all"><p class="text-4xl font-black text-slate-800">${i}</p><p class="text-[10px] font-bold text-slate-400 uppercase mt-2">Grade</p></div>`;
+        v.innerHTML += `
+            <div onclick="selectClass(${i})" class="group p-8 bg-white shadow-sm border border-slate-100 rounded-[2.5rem] text-center cursor-pointer hover:border-indigo-600 hover:shadow-xl transition-all duration-300">
+                <p class="text-4xl font-black text-slate-800 group-hover:text-indigo-600 group-hover:scale-110 transition-all">${i}</p>
+                <p class="text-[10px] font-bold text-slate-400 uppercase mt-2">Grade</p>
+            </div>`;
     }
     updateUI();
 }
+
 
 function selectClass(n) { active.class = n; showView('view-subjects'); document.getElementById('view-subjects').innerHTML = ["Maths", "Science", "English"].map(s => `<div onclick="selectSub('${s}')" class="p-12 bg-white rounded-[3rem] shadow-sm border font-black text-2xl text-center uppercase cursor-pointer hover:shadow-xl transition-all">${s}</div>`).join(''); }
 
@@ -230,9 +240,17 @@ function updateBread(id) {
 }
 
 function toggleMenu() {
-    document.getElementById('side-menu').classList.toggle('-translate-x-full');
-    document.getElementById('overlay').classList.toggle('hidden');
-    updateUI();
+    const menu = document.getElementById('side-menu');
+    const overlay = document.getElementById('overlay');
+    
+    // Toggle the classes
+    menu.classList.toggle('-translate-x-full');
+    overlay.classList.toggle('hidden');
+    
+    // Only update UI if menu is becoming visible
+    if (!menu.classList.contains('-translate-x-full')) {
+        updateUI();
+    }
 }
 
 function updateUI() {
