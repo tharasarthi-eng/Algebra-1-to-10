@@ -224,20 +224,63 @@ function toggleMenu() {
 }
 
 function updateUI() {
+    // 1. Core Global Stats
     document.getElementById('nav-pts').innerText = db.pts;
     document.getElementById('menu-pts').innerText = db.pts;
-    document.getElementById('stats-right').innerText = db.right;
-    document.getElementById('stats-wrong').innerText = db.wrong;
-    document.getElementById('progress-list').innerHTML = db.history.slice(-5).reverse().map(h => `<div class="p-2 bg-slate-50 border-l-4 border-indigo-400 text-[10px] font-bold">${h.topic} - ${h.date}</div>`).join('') || "No activity yet.";
-const medalsDiv = document.getElementById('medals-container');
-    const milestone = Math.floor(db.pts / 100); 
+
+    // 2. Level & Experience (XP) Logic
+    // Every 500 points = 1 Level
+    const pointsPerLevel = 500;
+    const currentLevel = Math.floor(db.pts / pointsPerLevel) + 1;
+    const xpInCurrentLevel = db.pts % pointsPerLevel;
+    const xpPercentage = (xpInCurrentLevel / pointsPerLevel) * 100;
+
+    // Rank Progression Names
+    const ranks = ["Novice", "Explorer", "Scholar", "Expert", "Elite", "Master", "Legend"];
+    const rankTitle = ranks[Math.min(currentLevel - 1, ranks.length - 1)];
     
-    let medalHTML = '';
-    for(let i=0; i < milestone; i++) {
-        medalHTML += `<div class="w-8 h-8 bg-yellow-400 rounded-full border-2 border-yellow-600 flex items-center justify-center text-xs shadow-sm">⭐</div>`;
+    // Update Level Text and XP Progress Bar
+    const rankLabel = document.getElementById('rank-name');
+    if(rankLabel) rankLabel.innerText = `Level ${currentLevel}: ${rankTitle}`;
+    
+    const xpRatioLabel = document.getElementById('xp-ratio');
+    if(xpRatioLabel) xpRatioLabel.innerText = `${xpInCurrentLevel} / ${pointsPerLevel} XP`;
+    
+    const xpBarFill = document.getElementById('xp-fill');
+    if(xpBarFill) xpBarFill.style.width = xpPercentage + "%";
+
+    // 3. Accuracy Calculation
+    const totalAttempted = db.right + db.wrong;
+    const accuracy = totalAttempted === 0 ? 0 : Math.round((db.right / totalAttempted) * 100);
+    const accuracyDisplay = document.getElementById('stats-accuracy');
+    if(accuracyDisplay) accuracyDisplay.innerText = accuracy + "%";
+
+    // 4. Subject Mastery (Dynamic Calculation)
+    // Here we calculate mastery based on points vs a goal (e.g., 2000 pts per subject)
+    const mathsMastery = Math.min((db.pts / 2000) * 100, 100); 
+    const mathBar = document.getElementById('mastery-math');
+    if(mathBar) mathBar.style.width = mathsMastery + "%";
+
+    // 5. Achievement Log (Recent History)
+    const logList = document.getElementById('progress-list');
+    if(logList) {
+        logList.innerHTML = db.history.slice(-4).reverse().map(h => `
+            <div class="group p-4 bg-slate-50 border border-slate-100 rounded-2xl transition-all hover:bg-white hover:shadow-md hover:border-indigo-200">
+                <div class="flex justify-between items-center mb-1">
+                    <p class="text-[9px] font-black text-slate-800 uppercase tracking-tight">${h.topic}</p>
+                    <p class="text-[8px] font-bold text-slate-400">${h.date}</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="h-1 w-full bg-slate-200 rounded-full overflow-hidden">
+                        <div class="h-full bg-indigo-500 w-full"></div>
+                    </div>
+                    <span class="text-[8px] font-black text-indigo-500">COMPLETED</span>
+                </div>
+            </div>
+        `).join('') || `<div class="py-10 text-center"><p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">No Data Recorded</p></div>`;
     }
-    document.getElementById('medal-box').innerHTML = medalHTML;
 }
+
 
 function save() { localStorage.setItem('vks_lms_db', JSON.stringify(db)); updateUI(); }
 function resetData() { if(confirm("Reset progress?")) { localStorage.clear(); location.reload(); } }
