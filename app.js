@@ -127,10 +127,18 @@ function init() {
 }
 
 function selectClass(n) { active.class = n; showView('view-subjects'); document.getElementById('view-subjects').innerHTML = ["Maths", "Science", "English"].map(s => `<div onclick="selectSub('${s}')" class="p-12 bg-white rounded-[3rem] shadow-sm border font-black text-2xl text-center uppercase cursor-pointer hover:shadow-xl transition-all">${s}</div>`).join(''); }
+
+
 function selectSub(s) { active.sub = s; showView('view-chapters'); const chs = syllabus[`class${active.class}`] || {}; document.getElementById('view-chapters').innerHTML = Object.keys(chs).map(c => `<div onclick="loadFile('${c}', '${chs[c]}')" class="p-6 bg-white rounded-2xl border shadow-sm font-bold cursor-pointer hover:border-indigo-600 transition">${c}</div>`).join(''); }
 function loadFile(t, f) { active.ch = t; const path = `data/${active.sub.toLowerCase()}/class${active.class}/${f}`; const old = document.getElementById('data-script'); if(old) old.remove(); const s = document.createElement('script'); s.id = 'data-script'; s.src = path; s.onload = renderTopics; s.onerror = () => alert("File not found!"); document.head.appendChild(s); }
+
+
 function renderTopics() { showView('view-topics'); const ts = Object.keys(window.currentChapterData); document.getElementById('view-topics').innerHTML = ts.map(t => `<div onclick="selectTopic('${t}')" class="p-6 bg-white rounded-2xl border border-emerald-100 shadow-sm font-bold cursor-pointer hover:bg-emerald-50">${t}</div>`).join(''); }
+
+
 function selectTopic(t) { active.tp = t; showView('view-levels'); document.getElementById('view-levels').innerHTML = ["Easy", "Moderate", "Tough"].map(l => `<div onclick="startPractice('${l}')" class="p-10 bg-white border-2 border-indigo-500 rounded-3xl text-center font-black cursor-pointer hover:bg-indigo-600 hover:text-white transition">${l}</div>`).join(''); }
+
+
 function startPractice(l) { active.lvl = l; active.pool = window.currentChapterData[active.tp][l]; active.qIdx = 0; active.score = 0; showView('portal'); loadQuestion(); }
 
 function loadQuestion() {
@@ -146,6 +154,15 @@ function loadQuestion() {
     });
     document.getElementById('next-btn').classList.add('hidden');
     document.getElementById('feedback').classList.add('hidden');
+
+// This will render LaTeX formulas like $x^2 + y^2 = z^2$ automatically
+renderMathInElement(document.getElementById('q-box'), {
+    delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false}
+    ]
+});
+
 }
 
 function check(val, ans) {
