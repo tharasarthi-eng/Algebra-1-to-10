@@ -1,4 +1,7 @@
-let db = JSON.parse(localStorage.getItem('vks_lms_db')) || { pts: 0, right: 0, wrong: 0, history: [] };
+let lastLevel = Math.floor((JSON.parse(localStorage.getItem('vks_lms_db'))?.pts || 0) / 500) + 1;
+
+
+addlet db = JSON.parse(localStorage.getItem('vks_lms_db')) || { pts: 0, right: 0, wrong: 0, history: [] };
 let active = { class: 0, sub: '', ch: '', tp: '', lvl: '', qIdx: 0, score: 0, pool: [] };
 let navStack = [];
 
@@ -166,18 +169,27 @@ renderMathInElement(document.getElementById('q-box'), {
 }
 
 function check(val, ans) {
-    const fb = document.getElementById('feedback'); fb.classList.remove('hidden');
+    const fb = document.getElementById('feedback'); 
+    fb.classList.remove('hidden');
+    const qBox = document.getElementById('q-box');
     document.querySelectorAll('#opts-grid button').forEach(b => b.disabled = true);
+    
     if(val == ans) {
-        fb.innerText = "CORRECT! +10 PTS"; fb.className = "mt-6 p-4 rounded-xl font-bold bg-emerald-100 text-emerald-700 animate-bounce";
+        fb.innerText = "CORRECT! +10 XP"; 
+        fb.className = "mt-6 p-4 rounded-xl font-bold bg-emerald-100 text-emerald-700 animate-bounce";
         db.pts += 10; db.right += 1; active.score++;
+        if (window.confetti) confetti({ particleCount: 40, spread: 50, origin: { y: 0.8 } });
     } else {
-        fb.innerText = "WRONG! -5 PTS"; fb.className = "mt-6 p-4 rounded-xl font-bold bg-rose-100 text-rose-700";
+        fb.innerText = "WRONG! -5 XP"; 
+        fb.className = "mt-6 p-4 rounded-xl font-bold bg-rose-100 text-rose-700";
+        qBox.classList.add('shake'); // Triggers CSS shake
+        setTimeout(() => qBox.classList.remove('shake'), 400);
         db.pts = Math.max(0, db.pts - 5); db.wrong += 1;
     }
     document.getElementById('next-btn').classList.remove('hidden');
     save();
 }
+
 
 function handleNext() {
     active.qIdx++; 
@@ -224,61 +236,78 @@ function toggleMenu() {
 }
 
 function updateUI() {
-    // 1. Core Global Stats
+    // Basic Point Sync
     document.getElementById('nav-pts').innerText = db.pts;
-    document.getElementById('menu-pts').innerText = db.pts;
+    if(document.getElementById('menu-pts')) document.getElementById('menu-pts').innerText = db.pts;
 
-    // 2. Level & Experience (XP) Logic
-    // Every 500 points = 1 Level
-    const pointsPerLevel = 500;
-    const currentLevel = Math.floor(db.pts / pointsPerLevel) + 1;
-    const xpInCurrentLevel = db.pts % pointsPerLevel;
-    const xpPercentage = (xpInCurrentLevel / pointsPerLevel) * 100;
+    // Level & XP Logic (500 pts per level)
+    const ptsPerLvl = 500;
+    const currentLevel = Math.floor(db.pts / ptsPerLvl) + 1;
+    const xpInLevel = db.pts % ptsPerLvl;
+    const xpPerc = (xpInLevel / ptsPerLvl) * 100;
 
-    // Rank Progression Names
-    const ranks = ["Novice", "Explorer", "Scholar", "Expert", "Elite", "Master", "Legend"];
+    // Trigger Level Up Modal
+    if (currentLevel > lastLevel) {
+        showLevelUpModal(currentLevel);
+        lastLevel = currentLevel;
+    }
+
+    // Update Status Portal Labels
+    const ranks = ["Novice", "Scholar", "Expert", "Master", "Elite", "Legend"];
     const rankTitle = ranks[Math.min(currentLevel - 1, ranks.length - 1)];
     
-    // Update Level Text and XP Progress Bar
-    const rankLabel = document.getElementById('rank-name');
-    if(rankLabel) rankLabel.innerText = `Level ${currentLevel}: ${rankTitle}`;
+    if(document.getElementById('rank-name')) 
+        document.getElementById('rank-name').innerText = `Level ${currentLevel}: ${rankTitle}`;
     
-    const xpRatioLabel = document.getElementById('xp-ratio');
-    if(xpRatioLabel) xpRatioLabel.innerText = `${xpInCurrentLevel} / ${pointsPerLevel} XP`;
+    if(document.getElementById('xp-ratio')) 
+        document.getElementById('xp-ratio').innerText = `${xpInLevel} / ${ptsPerLvl} XP`;
     
-    const xpBarFill = document.getElementById('xp-fill');
-    if(xpBarFill) xpBarFill.style.width = xpPercentage + "%";
+    if(document.getElementById('xp-fill')) 
+        document.getElementById('xp-fill').style.width = xpPerc + "%";
 
-    // 3. Accuracy Calculation
-    const totalAttempted = db.right + db.wrong;
-    const accuracy = totalAttempted === 0 ? 0 : Math.round((db.right / totalAttempted) * 100);
-    const accuracyDisplay = document.getElementById('stats-accuracy');
-    if(accuracyDisplay) accuracyDisplay.innerText = accuracy + "%";
+    // Accuracy Calculation
+    const total = db.right + db.wrong;
+    const acc = total === 0 ? 0 : Math.round((db.right / total) * 100);
+    if(document.getElementById('stats-accuracy')) 
+        document.getElementById('stats-accuracy').innerText = acc + "%";
+    
+    // Original Stats Fallback
+    if(document.getElementById('stats-right')) document.getElementById('stats-right').innerText = db.right;
+    if(document.getElementById('stats-wrong')) document.getElementById('stats-wrong').innerText = db.wrong;
 
-    // 4. Subject Mastery (Dynamic Calculation)
-    // Here we calculate mastery based on points vs a goal (e.g., 2000 pts per subject)
-    const mathsMastery = Math.min((db.pts / 2000) * 100, 100); 
-    const mathBar = document.getElementById('mastery-math');
-    if(mathBar) mathBar.style.width = mathsMastery + "%";
-
-    // 5. Achievement Log (Recent History)
-    const logList = document.getElementById('progress-list');
-    if(logList) {
-        logList.innerHTML = db.history.slice(-4).reverse().map(h => `
-            <div class="group p-4 bg-slate-50 border border-slate-100 rounded-2xl transition-all hover:bg-white hover:shadow-md hover:border-indigo-200">
-                <div class="flex justify-between items-center mb-1">
-                    <p class="text-[9px] font-black text-slate-800 uppercase tracking-tight">${h.topic}</p>
+    // Recent History Log
+    const log = document.getElementById('progress-list');
+    if(log) {
+        log.innerHTML = db.history.slice(-4).reverse().map(h => `
+            <div class="p-4 bg-slate-50 border border-slate-100 rounded-2xl mb-2">
+                <div class="flex justify-between items-center">
+                    <p class="text-[9px] font-black text-slate-800 uppercase">${h.topic}</p>
                     <p class="text-[8px] font-bold text-slate-400">${h.date}</p>
                 </div>
-                <div class="flex items-center gap-2">
-                    <div class="h-1 w-full bg-slate-200 rounded-full overflow-hidden">
-                        <div class="h-full bg-indigo-500 w-full"></div>
-                    </div>
-                    <span class="text-[8px] font-black text-indigo-500">COMPLETED</span>
-                </div>
             </div>
-        `).join('') || `<div class="py-10 text-center"><p class="text-[10px] font-black text-slate-300 uppercase tracking-widest">No Data Recorded</p></div>`;
+        `).join('') || `<p class="text-[10px] text-slate-300 text-center py-4">No History</p>`;
     }
+}
+
+function showLevelUpModal(level) {
+    const modal = document.createElement('div');
+    modal.className = "fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/80 backdrop-blur-md";
+    modal.id = "level-up-overlay";
+    modal.innerHTML = `
+        <div class="level-up-modal max-w-sm w-full p-10 rounded-[3rem] text-center text-white relative overflow-hidden bg-indigo-600">
+            <div class="text-6xl mb-4">🏆</div>
+            <h2 class="text-[10px] font-black uppercase tracking-widest opacity-70">Promotion</h2>
+            <h3 class="text-4xl font-black mt-2 mb-6">LEVEL ${level}</h3>
+            <p class="text-sm opacity-90 mb-8">Your knowledge is expanding! Keep going, Scholar.</p>
+            <button onclick="closeLevelUp()" class="w-full py-4 bg-white text-indigo-600 rounded-2xl font-black uppercase tracking-widest shadow-xl">Continue</button>
+        </div>`;
+    document.body.appendChild(modal);
+    if (window.confetti) confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+}
+
+function closeLevelUp() {
+    const m = document.getElementById('level-up-overlay');
+    if (m) m.remove();
 }
 
 
