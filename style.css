@@ -57,3 +57,21 @@ main > div:not(.hidden) {
     100% { background-position: -200% 0; }
 }
 
+
+/* Portal Glass Effect */
+#side-menu {
+    backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(0,0,0,0.05);
+}
+
+/* Custom shadow for the XP bar to make it "glow" */
+#xp-fill {
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.6);
+}
+
+/* Hover effect for history items */
+.group:hover {
+    border-color: #6366f1;
+    transform: translateX(5px);
+}
+
